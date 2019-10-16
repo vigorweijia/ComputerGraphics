@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "NewCanvasDialog.h"
+#include <QPainter>
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QPainter *qPainter;
 
 private slots:
     void on_actionNewCanvas_triggered();

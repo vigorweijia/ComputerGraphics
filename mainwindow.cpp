@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QPainter>
 #include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -28,7 +27,23 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
     newCanvasDialog->close();
     //ui->textBrowser->setText(QString::number(newCanvasWidth)+","+QString::number(height));
     QPixmap pixmap(width, height);
-    QPainter painter(&pixmap);
-    painter.fillRect(0,0,width,height,Qt::black);
+
+    //-------------Create the QPainter object----------------
+    qPainter = new QPainter(&pixmap);
+    qPainter->fillRect(0,0,width,height,Qt::white);
+    //-------------------------------------------------------
+
+    //-------------Reset the size of Window------------------
+    if(width > this->width() || height > this->height()) {
+        this->resize(width+50,height+50);
+    }
+    //-------------------------------------------------------
+
+    //-------------Reset the label (Canvas)------------------
+    if(width > ui->label->width() || height > ui->label->height()) {
+        ui->label->setGeometry(10,10,width,height);
+    }
+    //-------------------------------------------------------
+
     ui->label->setPixmap(pixmap);
 }
