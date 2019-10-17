@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "NewCanvasDialog.h"
 #include <QPainter>
+#include <QPixmap>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QPainter *qPainter;
+    QPixmap *qPixmap;
 
 private slots:
     void on_actionNewCanvas_triggered();
