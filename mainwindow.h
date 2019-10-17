@@ -36,7 +36,13 @@ private:
 
 private slots:
     void on_actionNewCanvas_triggered();
-    void on_actionSave_As_triggered();
+    //void on_actionOpen_triggered();
+    //void on_actionSave_triggered();
+    void on_actionSaveAs_triggered();
+    //void on_actionImportFromFile_triggered();
+    //void on_actionResetCanvas_triggered();
+    //void on_actionColor_triggered();
+    //void on_actionLine_triggered();
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
 };
 

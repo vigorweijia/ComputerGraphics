@@ -48,7 +48,7 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
     //qPixmap->save("1.bmp");
 }
 
-void MainWindow::on_actionSave_As_triggered() {
+void MainWindow::on_actionSaveAs_triggered() {
     QString filename = QFileDialog::getSaveFileName(this, "Open File", "/home", "Image File(*.bmp)");
     if(!filename.isNull()) {
         QFile qFile(filename);
