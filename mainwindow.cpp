@@ -29,7 +29,7 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
 
     //-------------Create the QPainter object----------------
     qPainter = new QPainter(qPixmap);
-    qPainter->fillRect(0,0,width,height,Qt::white);
+    qPainter->fillRect(0,0,width,height,Qt::blue);
     //-------------------------------------------------------
 
     //-------------Reset the size of Window------------------
@@ -46,4 +46,24 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
 
     ui->label->setPixmap(*qPixmap);
     //qPixmap->save("1.bmp");
+}
+
+void MainWindow::on_actionSave_As_triggered() {
+    QString filename = QFileDialog::getSaveFileName(this, "Open File", "/home", "Image File(*.bmp)");
+    if(!filename.isNull()) {
+        QFile qFile(filename);
+        if(!qFile.open(QFile::WriteOnly|QFile::Text)) {
+            QMessageBox::warning(this, "ERROR", tr("Failed to open file!"));
+            return;
+        }
+        QTextStream qTextStream(&qFile);
+        QByteArray qByteArray;
+        QBuffer qBuffer(&qByteArray);
+        qBuffer.open(QIODevice::WriteOnly);
+        qPixmap->save(&qBuffer, "BMP");
+        qFile.write(qByteArray);
+    }
+    else {
+        qDebug() << "Cancel";
+    }
 }

@@ -3,8 +3,14 @@
 
 #include <QMainWindow>
 #include "NewCanvasDialog.h"
+#include <QDebug>
 #include <QPainter>
 #include <QPixmap>
+#include <QFileDialog>
+#include <QFile>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QBuffer>
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +36,7 @@ private:
 
 private slots:
     void on_actionNewCanvas_triggered();
+    void on_actionSave_As_triggered();
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
 };
 
