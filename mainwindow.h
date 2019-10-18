@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "NewCanvasDialog.h"
+#include "LineDialog.h"
+#include <vector>
 #include <QDebug>
 #include <QPainter>
 #include <QPixmap>
@@ -11,6 +13,14 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QBuffer>
+#include <QDialog>
+
+#define TYPE_LINE 1
+#define TYPE_POLYGON 2
+#define TYPE_ELLIPSE 3
+#define TYPE_CURVE 4
+
+using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -27,12 +37,20 @@ public:
     int newCanvasWidth;
     int newCanvasHeight;
     NewCanvasDialog *newCanvasDialog;
+    LineDialog *lineDialog;
 
+
+    struct GraphicUnit {
+        int id;
+        int type;
+    };
+    vector<GraphicUnit> v;
 
 private:
     Ui::MainWindow *ui;
     QPainter *qPainter;
     QPixmap *qPixmap;
+    bool isIdExist(int id);
 
 private slots:
     void on_actionNewCanvas_triggered();
@@ -42,8 +60,9 @@ private slots:
     //void on_actionImportFromFile_triggered();
     //void on_actionResetCanvas_triggered();
     //void on_actionColor_triggered();
-    //void on_actionLine_triggered();
+    void on_actionLine_triggered();
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
+    void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
 };
 
 #endif // MAINWINDOW_H

@@ -7,13 +7,25 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+//-------------new canvas dialog----------------
     newCanvasDialog = new NewCanvasDialog();
     connect(newCanvasDialog, SIGNAL(newCanvasDialogAcceptedEvent(int,int)), this, SLOT(onReceive_NewCanvasDialogAcceptedEvent(int,int)));
+//----------------------------------------------
+
+//-------------draw line dialog-----------------
+    lineDialog = new LineDialog();
+    connect(lineDialog, SIGNAL(drawLineEvent(int,float,float,float,float,int)), this, SLOT(onReceive_DrawLine(int,float,float,float,float,int)));
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::isIdExist(int id) {
+    for(int i = 0; i < v.size(); i++) {if(v[i].id == id) return false;}
+    return true;
 }
 
 void MainWindow::on_actionNewCanvas_triggered() {
@@ -66,4 +78,12 @@ void MainWindow::on_actionSaveAs_triggered() {
     else {
         qDebug() << "Cancel";
     }
+}
+
+void MainWindow::on_actionLine_triggered() {
+    lineDialog->show();
+}
+
+void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type) {
+
 }

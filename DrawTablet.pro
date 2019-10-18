@@ -26,15 +26,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    NewCanvasDialog.cpp
+    NewCanvasDialog.cpp \
+    LineDialog.cpp \
+    mydialog.cpp
 
 HEADERS += \
         mainwindow.h \
-    NewCanvasDialog.h
+    NewCanvasDialog.h \
+    LineDialog.h \
+    mydialog.h
 
 FORMS += \
         mainwindow.ui \
-    NewCanvasDialog.ui
+    NewCanvasDialog.ui \
+    LineDialog.ui \
+    mydialog.ui
 
 RESOURCES += \
     resources.qrc
