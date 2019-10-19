@@ -43,6 +43,7 @@ public:
     struct GraphicUnit {
         int id;
         int type;
+        vector<float> para;
     };
     vector<GraphicUnit> v;
 
@@ -51,6 +52,8 @@ private:
     QPainter *qPainter;
     QPixmap *qPixmap;
     bool isIdExist(int id);
+    void drawLineDDA(float x0, float y0, float x1, float y1);
+    void drawLineBresenham(float x0, float y0, float x1, float y1);
 
 private slots:
     void on_actionNewCanvas_triggered();

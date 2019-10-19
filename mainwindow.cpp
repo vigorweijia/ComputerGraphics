@@ -85,5 +85,28 @@ void MainWindow::on_actionLine_triggered() {
 }
 
 void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type) {
+    for(int i = 0; i < v.size(); i++) {
+        if(v[i].id == id) {
+            QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
+            return;
+        }
+    }
+    GraphicUnit g;
+    g.id = id;
+    g.type = TYPE_LINE;
+    g.para.push_back(x0);
+    g.para.push_back(y0);
+    g.para.push_back(x1);
+    g.para.push_back(y1);
+    v.push_back(g);
+    if(type == 1) drawLineDDA(x0, y0, x1, y1);
+    else drawLineBresenham(x0, y0, x1, y1);
+}
+
+void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1) {
+
+}
+
+void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1) {
 
 }
