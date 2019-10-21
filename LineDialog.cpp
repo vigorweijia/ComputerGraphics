@@ -13,11 +13,13 @@ LineDialog::~LineDialog()
     delete ui;
 }
 
-void LineDialog::on_Cancel_clicked() {
+void LineDialog::on_Cancel_clicked()
+{
     this->close();
 }
 
-void LineDialog::on_DDA_clicked() {
+void LineDialog::on_DDA_clicked()
+{
     if(ui->ID->text().isEmpty() || ui->x0->text().isEmpty() || ui->y0->text().isEmpty() || ui->x1->text().isEmpty() || ui->y1->text().isEmpty()) return;
     int id = ui->ID->text().toInt();
     float x0 = ui->x0->text().toFloat();
@@ -28,7 +30,8 @@ void LineDialog::on_DDA_clicked() {
     this->close();
 }
 
-void LineDialog::on_Bresenham_clicked() {
+void LineDialog::on_Bresenham_clicked()
+{
     if(ui->ID->text().isEmpty() || ui->x0->text().isEmpty() || ui->y0->text().isEmpty() || ui->x1->text().isEmpty() || ui->y1->text().isEmpty()) return;
     int id = ui->ID->text().toInt();
     float x0 = ui->x0->text().toFloat();

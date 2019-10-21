@@ -16,6 +16,11 @@ MainWindow::MainWindow(QWidget *parent) :
     lineDialog = new LineDialog();
     connect(lineDialog, SIGNAL(drawLineEvent(int,float,float,float,float,int)), this, SLOT(onReceive_DrawLine(int,float,float,float,float,int)));
 //----------------------------------------------
+
+//-------------draw ellipse dialog--------------
+    ellipseDialog = new EllipseDialog();
+    connect(ellipseDialog, SIGNAL(drawEllipseEvent(int,int,int,int,int)), this, SLOT(onReceive_DrawEllipse(int,int,int,int,int)));
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -23,16 +28,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::isIdExist(int id) {
+bool MainWindow::isIdExist(int id)
+{
     for(int i = 0; i < v.size(); i++) {if(v[i].id == id) return false;}
     return true;
 }
 
-void MainWindow::on_actionNewCanvas_triggered() {
+void MainWindow::on_actionNewCanvas_triggered()
+{
     newCanvasDialog->show();
 }
 
-void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
+void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height)
+{
     newCanvasWidth = width;
     newCanvasHeight = height;
     newCanvasDialog->close();
@@ -60,7 +68,8 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height) {
     //qPixmap->save("1.bmp");
 }
 
-void MainWindow::on_actionSaveAs_triggered() {
+void MainWindow::on_actionSaveAs_triggered()
+{
     QString filename = QFileDialog::getSaveFileName(this, "Open File", "/home", "Image File(*.bmp)");
     if(!filename.isNull()) {
         QFile qFile(filename);
@@ -80,16 +89,16 @@ void MainWindow::on_actionSaveAs_triggered() {
     }
 }
 
-void MainWindow::on_actionLine_triggered() {
+void MainWindow::on_actionLine_triggered()
+{
     lineDialog->show();
 }
 
-void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type) {
-    for(int i = 0; i < v.size(); i++) {
-        if(v[i].id == id) {
-            QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
-            return;
-        }
+void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type)
+{
+    if(isIdExist(id)) {
+        QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
+        return;
     }
     GraphicUnit g;
     g.id = id;
@@ -103,7 +112,8 @@ void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float 
     else if(type == 1) drawLineBresenham(x0, y0, x1, y1);
 }
 
-void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1) {
+void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1)
+{
     if(x1 - x0 == 0) {QMessageBox::warning(this, "error", tr("vertical!"));return;}
     float m = (y1 - y0)/(x1 - x0);
     if(abs(m) <= 1) {
@@ -127,7 +137,8 @@ void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1) {
     ui->label->setPixmap(*qPixmap);
 }
 
-void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1) {
+void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1)
+{
     if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
     if(x1 == x0) {
         if(y1 < y0) swap(y1, y0);
@@ -172,4 +183,24 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1) {
         }
     }
     ui->label->setPixmap(*qPixmap);
+}
+
+void MainWindow::onReceive_DrawEllipse(int id, int x, int y, int rx, int ry) {
+    if(isIdExist(id)) {
+        QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
+        return;
+    }
+    GraphicUnit g;
+    g.id = id;
+    g.type = TYPE_ELLIPSE;
+    g.para.push_back(x);
+    g.para.push_back(y);
+    g.para.push_back(rx);
+    g.para.push_back(ry);
+    v.push_back(g);
+    drawEllipse(x, y, rx, ry);
+}
+
+void MainWindow::drawEllipse(int x, int y, int rx, int ry) {
+
 }

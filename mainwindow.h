@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "NewCanvasDialog.h"
 #include "LineDialog.h"
+#include "EllipseDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -38,6 +39,7 @@ public:
     int newCanvasHeight;
     NewCanvasDialog *newCanvasDialog;
     LineDialog *lineDialog;
+    EllipseDialog *ellipseDialog;
 
 
     struct GraphicUnit {
@@ -54,6 +56,7 @@ private:
     bool isIdExist(int id);
     void drawLineDDA(float x0, float y0, float x1, float y1);
     void drawLineBresenham(float x0, float y0, float x1, float y1);
+    void drawEllipse(int x, int y, int rx, int ry);
 
 private slots:
     void on_actionNewCanvas_triggered();
@@ -66,6 +69,7 @@ private slots:
     void on_actionLine_triggered();
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
     void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
+    void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
 };
 
 #endif // MAINWINDOW_H
