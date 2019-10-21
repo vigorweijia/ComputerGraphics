@@ -30,8 +30,8 @@ MainWindow::~MainWindow()
 
 bool MainWindow::isIdExist(int id)
 {
-    for(int i = 0; i < v.size(); i++) {if(v[i].id == id) return false;}
-    return true;
+    for(int i = 0; i < v.size(); i++) {if(v[i].id == id) return true;}
+    return false;
 }
 
 void MainWindow::on_actionNewCanvas_triggered()
@@ -185,6 +185,10 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1)
     ui->label->setPixmap(*qPixmap);
 }
 
+void MainWindow::on_actionEllipse_triggered() {
+    ellipseDialog->show();
+}
+
 void MainWindow::onReceive_DrawEllipse(int id, int x, int y, int rx, int ry) {
     if(isIdExist(id)) {
         QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
@@ -202,5 +206,49 @@ void MainWindow::onReceive_DrawEllipse(int id, int x, int y, int rx, int ry) {
 }
 
 void MainWindow::drawEllipse(int x, int y, int rx, int ry) {
-
+    int xi = 0, yi = ry;
+    qPainter->drawPoint(x + xi, y +yi);
+    qPainter->drawPoint(x - xi, y + yi);
+    float p1k = ry*ry - rx*rx*ry + (float)(rx*rx)/4;
+    for(xi = 1; ry*ry*xi >= rx*rx*yi; xi++)
+    {
+        if(p1k < 0)
+        {
+            p1k = p1k + 2*ry*ry*xi + ry*ry;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+        else
+        {
+            yi = yi - 1;
+            p1k = p1k + 2*ry*ry*xi - 2*rx*rx*yi + ry*ry;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+    }
+    float p2k = ry*ry*(xi+0.5f)*(xi+0.5f) + rx*rx*(yi-1) - rx*rx*ry*ry;
+    for(; yi >= 0; yi--) {
+        if(p2k > 0)
+        {
+            p2k = p2k - 2*rx*rx*ry + rx*rx;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+        else
+        {
+            xi = xi + 1;
+            p2k = p2k + 2*ry*ry+xi - 2*rx*rx*yi + rx*rx;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+    }
+    ui->label->setPixmap(*qPixmap);
 }

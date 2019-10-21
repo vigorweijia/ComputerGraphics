@@ -67,6 +67,7 @@ private slots:
     //void on_actionResetCanvas_triggered();
     //void on_actionColor_triggered();
     void on_actionLine_triggered();
+    void on_actionEllipse_triggered();
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
     void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
     void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
