@@ -109,19 +109,19 @@ void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1) {
     if(abs(m) <= 1) {
         if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
         qPainter->drawPoint((int)x0, (int)y0);
-        int yi = (int)y0;
+        float yi = y0;
         for(int xi = (int)x0 + 1; xi <= (int)x1; xi++) {
-            yi = (int)((float)yi + m);
-            qPainter->drawPoint(xi, yi);
+            yi = (float)yi + m;
+            qPainter->drawPoint(xi, (int)yi);
         }
     }
     else {
         if(y1 < y0) {swap(x0,x1); swap(y0,y1);}
         qPainter->drawPoint((int)x0, (int)y0);
-        int xi = (int)x0;
+        float xi = x0;
         for(int yi = (int)y0 + 1; yi <= (int)y1; yi++) {
-            xi = (int)((float)xi + (1/m));
-            qPainter->drawPoint(xi, yi);
+            xi = (float)xi + (1/m);
+            qPainter->drawPoint((int)xi, yi);
         }
     }
     ui->label->setPixmap(*qPixmap);
@@ -166,7 +166,7 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1) {
         int xi = x0;
         for(int yi = (int)y0 + 1; yi <= (int)y1; yi++) {
             if(p < 0) p = p + 2*deltaX;
-            else p = p + 2*deltaX - deltaY;
+            else p = p + 2*deltaX - 2*deltaY;
             if(p > 0) xi = xi + 1;
             qPainter->drawPoint(xi, yi);
         }
