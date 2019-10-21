@@ -24,7 +24,7 @@ void LineDialog::on_DDA_clicked() {
     float y0 = ui->y0->text().toFloat();
     float x1 = ui->x1->text().toFloat();
     float y1 = ui->y1->text().toFloat();
-    emit drawLineEvent(id, x0, y0, x1, y1, 1);
+    emit drawLineEvent(id, x0, y0, x1, y1, 0);
     this->close();
 }
 
