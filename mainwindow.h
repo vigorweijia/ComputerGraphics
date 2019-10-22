@@ -55,6 +55,7 @@ private:
     QPixmap *qPixmap;
     QPainter *tempPainter;
     QPixmap *tempPixmap;
+    void createNewCanvas(int width, int height);
     bool isIdExist(int id);
     void drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
@@ -66,8 +67,8 @@ private slots:
     //void on_actionOpen_triggered();
     //void on_actionSave_triggered();
     void on_actionSaveAs_triggered();
-    //void on_actionImportFromFile_triggered();
-    //void on_actionResetCanvas_triggered();
+    void on_actionImportFromFile_triggered();
+    void on_actionResetCanvas_triggered();
     //void on_actionColor_triggered();
     void on_actionLine_triggered();
     void on_actionEllipse_triggered();

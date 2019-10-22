@@ -48,7 +48,7 @@ void MainWindow::on_actionNewCanvas_triggered()
     newCanvasDialog->show();
 }
 
-void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height)
+void MainWindow::createNewCanvas(int width, int height)
 {
     newCanvasWidth = width;
     newCanvasHeight = height;
@@ -80,6 +80,11 @@ void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height)
     //qPixmap->save("1.bmp");
 }
 
+void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height)
+{
+    createNewCanvas(width, height);
+}
+
 void MainWindow::on_actionSaveAs_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Open File", "/home", "Image File(*.bmp)");
@@ -99,6 +104,52 @@ void MainWindow::on_actionSaveAs_triggered()
     else {
         qDebug() << "Cancel";
     }
+}
+
+void MainWindow::on_actionImportFromFile_triggered() {
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", "/home", "Text File(*.txt)");
+    if(!fileName.isNull())
+    {
+        QFile qFile(fileName);
+        if(!qFile.open(QFile::ReadOnly|QFile::Text))
+        {
+            QMessageBox::warning(this, "ERROR", tr("Failed to open file!"));
+            return;
+        }
+        QTextStream qTextStream(&qFile);
+        qTextStream.seek(0); //move to the begining of the file
+        QString textLine;
+        while(!qTextStream.atEnd())
+        {
+            textLine = qTextStream.readLine();
+            QStringList strList = textLine.split(" ");
+            if(strList[0].compare(QString("resetCanvas")))
+            {
+                createNewCanvas(strList[1].toInt(), strList[2].toInt());
+            }
+            else if(strList[0].compare(QString("saveCanvas")))
+            {
+                qDebug() << "no function of saveCanvas right now\n";
+            }
+            else if(strList[0].compare(QString("setColor")))
+            {
+                qDebug() << "no function of setColor right now\n";
+            }
+            else if(strList[0].compare(QString("drawLine")))
+            {
+                //if(strList.compare(QString("DDA")))
+                //if(strList.compare(QString("Bresenham")))
+            }
+        }
+    }
+    else
+    {
+        qDebug() << "Cancel\n";
+    }
+}
+
+void MainWindow::on_actionResetCanvas_triggered() {
+    newCanvasDialog->show();
 }
 
 void MainWindow::on_actionLine_triggered()
