@@ -207,14 +207,16 @@ void MainWindow::onReceive_DrawEllipse(int id, int x, int y, int rx, int ry) {
 
 void MainWindow::drawEllipse(int x, int y, int rx, int ry) {
     int xi = 0, yi = ry;
-    qPainter->drawPoint(x + xi, y +yi);
-    qPainter->drawPoint(x - xi, y + yi);
+    qPainter->drawPoint(x + xi, y + yi);
+    qPainter->drawPoint(x + xi, y - yi);
     float p1k = ry*ry - rx*rx*ry + (float)(rx*rx)/4;
-    for(xi = 1; ry*ry*xi >= rx*rx*yi; xi++)
+    int lastX, lastY;
+    for(xi = 1; ry*ry*xi < rx*rx*yi; xi++)
     {
         if(p1k < 0)
         {
             p1k = p1k + 2*ry*ry*xi + ry*ry;
+            lastX = xi, lastY = yi;
             qPainter->drawPoint(x + xi, y + yi);
             qPainter->drawPoint(x - xi, y + yi);
             qPainter->drawPoint(x + xi, y - yi);
@@ -224,17 +226,21 @@ void MainWindow::drawEllipse(int x, int y, int rx, int ry) {
         {
             yi = yi - 1;
             p1k = p1k + 2*ry*ry*xi - 2*rx*rx*yi + ry*ry;
+            lastX = xi, lastY = yi;
             qPainter->drawPoint(x + xi, y + yi);
             qPainter->drawPoint(x - xi, y + yi);
             qPainter->drawPoint(x + xi, y - yi);
             qPainter->drawPoint(x - xi, y - yi);
         }
+        qDebug() << xi << " " << yi << "\n";
     }
-    float p2k = ry*ry*(xi+0.5f)*(xi+0.5f) + rx*rx*(yi-1) - rx*rx*ry*ry;
-    for(; yi >= 0; yi--) {
+    /*xi = lastX, yi = lastY;
+    float p2k = (float)ry*(float)ry*((float)xi+0.5f)*((float)xi+0.5f) + (float)rx*rx*(yi-1) - (float)rx*rx*ry*ry;
+    for(yi = yi - 1; yi >= 0; yi--)
+    {
         if(p2k > 0)
         {
-            p2k = p2k - 2*rx*rx*ry + rx*rx;
+            p2k = p2k - 2*rx*rx*yi + rx*rx;
             qPainter->drawPoint(x + xi, y + yi);
             qPainter->drawPoint(x - xi, y + yi);
             qPainter->drawPoint(x + xi, y - yi);
@@ -243,7 +249,37 @@ void MainWindow::drawEllipse(int x, int y, int rx, int ry) {
         else
         {
             xi = xi + 1;
-            p2k = p2k + 2*ry*ry+xi - 2*rx*rx*yi + rx*rx;
+            p2k = p2k + 2*ry*ry*xi - 2*rx*rx*yi + rx*rx;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+        qDebug() << xi << " " << yi << "\n";
+    }*/
+    qPainter->drawPoint(x + xi, y + yi);
+    qPainter->drawPoint(x - xi, y + yi);
+    qPainter->drawPoint(x + xi, y - yi);
+    qPainter->drawPoint(x - xi, y - yi);
+    xi = rx;
+    yi = 0;
+    qPainter->drawPoint(x + xi, y + yi);
+    qPainter->drawPoint(x - xi, y + yi);
+    float p2k = rx*rx - ry*ry*rx + (float)(ry*ry)/4;
+    for(yi = yi + 1; rx*rx*yi < ry*ry*xi; yi++)
+    {
+        if(p2k < 0)
+        {
+            p2k = p2k + 2*rx*rx*yi + rx*rx;
+            qPainter->drawPoint(x + xi, y + yi);
+            qPainter->drawPoint(x - xi, y + yi);
+            qPainter->drawPoint(x + xi, y - yi);
+            qPainter->drawPoint(x - xi, y - yi);
+        }
+        else
+        {
+            xi = xi - 1;
+            p2k = p2k + 2*rx*rx*yi - 2*ry*ry*xi + rx*rx;
             qPainter->drawPoint(x + xi, y + yi);
             qPainter->drawPoint(x - xi, y + yi);
             qPainter->drawPoint(x + xi, y - yi);
