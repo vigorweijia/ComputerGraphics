@@ -53,10 +53,13 @@ private:
     Ui::MainWindow *ui;
     QPainter *qPainter;
     QPixmap *qPixmap;
+    QPainter *tempPainter;
+    QPixmap *tempPixmap;
     bool isIdExist(int id);
-    void drawLineDDA(float x0, float y0, float x1, float y1);
-    void drawLineBresenham(float x0, float y0, float x1, float y1);
-    void drawEllipse(int x, int y, int rx, int ry);
+    void drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter);
+    void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
+    void drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter);
+    void createTempPixmapExceptId(int id);
 
 private slots:
     void on_actionNewCanvas_triggered();
