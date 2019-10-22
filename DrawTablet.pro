@@ -29,21 +29,24 @@ SOURCES += \
     NewCanvasDialog.cpp \
     LineDialog.cpp \
     mydialog.cpp \
-    EllipseDialog.cpp
+    EllipseDialog.cpp \
+    PolygonDialog.cpp
 
 HEADERS += \
         mainwindow.h \
     NewCanvasDialog.h \
     LineDialog.h \
     mydialog.h \
-    EllipseDialog.h
+    EllipseDialog.h \
+    PolygonDialog.h
 
 FORMS += \
         mainwindow.ui \
     NewCanvasDialog.ui \
     LineDialog.ui \
     mydialog.ui \
-    EllipseDialog.ui
+    EllipseDialog.ui \
+    PolygonDialog.ui
 
 RESOURCES += \
     resources.qrc
