@@ -132,7 +132,8 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("saveCanvas")) == 0)
             {
-                qDebug() << "no function of saveCanvas right now\n";
+                qDebug() << "now at saveCanvas" << strList.size() << "\n";
+                qPixmap->save(strList[1]+".bmp");
             }
             else if(strList[0].compare(QString("setColor")) == 0)
             {
