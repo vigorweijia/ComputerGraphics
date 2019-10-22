@@ -52,7 +52,7 @@ void MainWindow::createNewCanvas(int width, int height)
 {
     newCanvasWidth = width;
     newCanvasHeight = height;
-    newCanvasDialog->close();
+
     //ui->textBrowser->setText(QString::number(newCanvasWidth)+","+QString::number(height));
     qPixmap = new QPixmap(width, height);
     tempPixmap = new QPixmap(width, height);
@@ -83,6 +83,7 @@ void MainWindow::createNewCanvas(int width, int height)
 void MainWindow::onReceive_NewCanvasDialogAcceptedEvent(int width, int height)
 {
     createNewCanvas(width, height);
+    newCanvasDialog->close();
 }
 
 void MainWindow::on_actionSaveAs_triggered()
@@ -122,23 +123,89 @@ void MainWindow::on_actionImportFromFile_triggered() {
         while(!qTextStream.atEnd())
         {
             textLine = qTextStream.readLine();
+            qDebug() << textLine;
             QStringList strList = textLine.split(" ");
-            if(strList[0].compare(QString("resetCanvas")))
+            if(strList[0].compare(QString("resetCanvas")) == 0)
             {
+                qDebug() << "now at resetCanvas " << strList.size() << "\n";
                 createNewCanvas(strList[1].toInt(), strList[2].toInt());
             }
-            else if(strList[0].compare(QString("saveCanvas")))
+            else if(strList[0].compare(QString("saveCanvas")) == 0)
             {
                 qDebug() << "no function of saveCanvas right now\n";
             }
-            else if(strList[0].compare(QString("setColor")))
+            else if(strList[0].compare(QString("setColor")) == 0)
             {
                 qDebug() << "no function of setColor right now\n";
             }
-            else if(strList[0].compare(QString("drawLine")))
+            else if(strList[0].compare(QString("drawLine")) == 0)
             {
-                //if(strList.compare(QString("DDA")))
-                //if(strList.compare(QString("Bresenham")))
+                qDebug() << "now at drawLine " << strList.size() << "\n";
+                int id = strList[1].toInt();
+                if(isIdExist(id))
+                {
+                    qDebug() << "id " << id << " exists, draw line failed.\n";
+                }
+                int x0 = strList[2].toInt();
+                int y0 = strList[3].toInt();
+                int x1 = strList[4].toInt();
+                int y1 = strList[5].toInt();
+                GraphicUnit g;
+                g.id = id;
+                g.type = TYPE_LINE;
+                g.para.push_back(x0);
+                g.para.push_back(y0);
+                g.para.push_back(x1);
+                g.para.push_back(y1);
+                if(strList[0].compare(QString("DDA"))) drawLineDDA((float)x0, (float)y0, (float)x1, (float)y1, qPainter);
+                if(strList[0].compare(QString("Bresenham"))) drawLineBresenham((float)x0, (float)y0, (float)x1, (float)y1, qPainter);
+                ui->label->setPixmap(*qPixmap);
+            }
+            else if(strList[0].compare(QString("drawPolygon")) == 0)
+            {
+                qDebug() << "no function of drawPolygon right now.\n";
+            }
+            else if(strList[0].compare(QString("drawEllipse")) == 0)
+            {
+                qDebug() << "now at drawEllipse " << strList.size() << "\n";
+                int id = strList[1].toInt();
+                int x = strList[2].toInt();
+                int y = strList[3].toInt();
+                int rx = strList[4].toInt();
+                int ry = strList[5].toInt();
+                GraphicUnit g;
+                g.id = id;
+                g.type = TYPE_ELLIPSE;
+                g.para.push_back(x);
+                g.para.push_back(y);
+                g.para.push_back(rx);
+                g.para.push_back(ry);
+                drawEllipse(x, y, rx, ry, qPainter);
+                ui->label->setPixmap(*qPixmap);
+            }
+            else if(strList[0].compare(QString("drawCurve")) == 0)
+            {
+                qDebug() << "no function of drawCurve right now.\n";
+            }
+            else if(strList[0].compare(QString("translate")) == 0)
+            {
+                qDebug() << "no function of translate right now.\n";
+            }
+            else if(strList[0].compare(QString("rotate")) == 0)
+            {
+                qDebug() << "no function of rotate right now.\n";
+            }
+            else if(strList[0].compare(QString("scale")) == 0)
+            {
+                qDebug() << "no function of scale right now.\n";
+            }
+            else if(strList[0].compare(QString("clip")) == 0)
+            {
+                qDebug() << "no function of clip right now.\n";
+            }
+            else
+            {
+                qDebug() << "unknown command of " << strList[0] << "\n";
             }
         }
     }
