@@ -61,7 +61,7 @@ void MainWindow::createNewCanvas(int width, int height)
     qPainter = new QPainter(qPixmap);
     qPainter->fillRect(0,0,width,height,Qt::white);
     tempPainter = new QPainter(tempPixmap);
-    tempPainter->fillRect(0,0,width,height,Qt::white);
+    tempPainter->fillRect(20,20,40,40,Qt::blue);
     //-------------------------------------------------------
 
     //-------------Reset the size of Window------------------
@@ -73,10 +73,12 @@ void MainWindow::createNewCanvas(int width, int height)
     //-------------Reset the label (Canvas)------------------
     if(width > ui->label->width() || height > ui->label->height()) {
         ui->label->setGeometry(10,10,width,height);
+        ui->tempLabel->setGeometry(10,10,width,height);
     }
     //-------------------------------------------------------
 
     ui->label->setPixmap(*qPixmap);
+    ui->tempLabel->setPixmap(*tempPixmap);
     //qPixmap->save("1.bmp");
 }
 
