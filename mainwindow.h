@@ -6,6 +6,7 @@
 #include "LineDialog.h"
 #include "EllipseDialog.h"
 #include "PolygonDialog.h"
+#include "ColorDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -16,6 +17,8 @@
 #include <QTextStream>
 #include <QBuffer>
 #include <QDialog>
+#include <QColor>
+#include <QPen>
 
 #define TYPE_LINE 1
 #define TYPE_POLYGON 2
@@ -42,12 +45,18 @@ public:
     LineDialog *lineDialog;
     EllipseDialog *ellipseDialog;
     PolygonDialog *polygonDialog;
+    ColorDialog *colorDialog;
 
 
     struct GraphicUnit {
         int id;
         int type;
         vector<float> para;
+        struct Color{
+            char r;
+            char g;
+            char b;
+        }color;
     };
     vector<GraphicUnit> v;
 
@@ -57,12 +66,14 @@ private:
     QPixmap *qPixmap;
     QPainter *tempPainter;
     QPixmap *tempPixmap;
+    QColor *qColor;
     void createNewCanvas(int width, int height);
     bool isIdExist(int id);
     void drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter);
     void drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter);
+    void setColor(int R, int G, int B);
     void createTempPixmapExceptId(int id);
 
 private slots:
@@ -72,7 +83,7 @@ private slots:
     void on_actionSaveAs_triggered();
     void on_actionImportFromFile_triggered();
     void on_actionResetCanvas_triggered();
-    //void on_actionColor_triggered();
+    void on_actionColor_triggered();
     void on_actionLine_triggered();
     void on_actionEllipse_triggered();
     void on_actionPolygon_triggered();
