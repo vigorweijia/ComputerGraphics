@@ -27,6 +27,7 @@ void PolygonDialog::on_DDA_clicked()
         v.push_back(strList[i*2+1].toInt());
     }
     emit drawPolygonEvent(id, n, v, 0);
+    this->close();
 }
 
 void PolygonDialog::on_Bresenham_clicked()
@@ -43,6 +44,7 @@ void PolygonDialog::on_Bresenham_clicked()
         v.push_back(strList[i*2+1].toInt());
     }
     emit drawPolygonEvent(id, n, v, 1);
+    this->close();
 }
 
 void PolygonDialog::on_Cancel_clicked()

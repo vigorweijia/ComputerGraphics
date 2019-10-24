@@ -433,7 +433,35 @@ void MainWindow::drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter
     }
 }
 
+void MainWindow::on_actionPolygon_triggered()
+{
+    polygonDialog->show();
+}
+
 void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> v, int type)
 {
+    if(isIdExist(id)) {
+        QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
+        return;
+    }
+    GraphicUnit g;
+    g.id = id;
+    g.para.push_back(n);
+    for(int i = 0; i < v.size(); i++) g.para.push_back(v[i]);
+    g.type = TYPE_POLYGON;
+    drawPolygon(n, v, type, qPainter);
+    ui->label->setPixmap(*qPixmap);
+}
 
+void MainWindow::drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter)
+{
+    for(int i = 0; i < n; i++)
+    {
+        float x0 = (float)v[i*2];
+        float y0 = (float)v[i*2+1];
+        float x1 = (float)v[(i*2+2)%(2*n)];
+        float y1 = (float)v[(i*2+3)%(2*n)];
+        if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
+        else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
+    }
 }
