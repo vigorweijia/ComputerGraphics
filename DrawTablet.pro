@@ -30,7 +30,8 @@ SOURCES += \
     LineDialog.cpp \
     mydialog.cpp \
     EllipseDialog.cpp \
-    PolygonDialog.cpp
+    PolygonDialog.cpp \
+    ColorDialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +39,8 @@ HEADERS += \
     LineDialog.h \
     mydialog.h \
     EllipseDialog.h \
-    PolygonDialog.h
+    PolygonDialog.h \
+    ColorDialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -46,7 +48,8 @@ FORMS += \
     LineDialog.ui \
     mydialog.ui \
     EllipseDialog.ui \
-    PolygonDialog.ui
+    PolygonDialog.ui \
+    ColorDialog.ui
 
 RESOURCES += \
     resources.qrc

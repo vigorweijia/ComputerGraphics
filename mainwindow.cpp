@@ -173,7 +173,26 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("drawPolygon")) == 0)
             {
-                qDebug() << "no function of drawPolygon right now.\n";
+                //qDebug() << "no function of drawPolygon right now.\n";
+                GraphicUnit g;
+                int id = strList[1].toInt();
+                g.id = id;
+                g.type = TYPE_POLYGON;
+                int n = strList[2].toInt();
+                g.para.push_back(n);
+                int type = (strList[3].compare(QString("DDA")) == 0) ? 0 : 1;
+                vector<int> v;
+                textLine = qTextStream.readLine();
+                strList = textLine.split(" ");
+                for(int i = 0; i < n; i++)
+                {
+                    v.push_back(strList[i*2].toInt());
+                    g.para.push_back(strList[i*2].toInt());
+                    v.push_back(strList[i*2+1].toInt());
+                    g.para.push_back(strList[i*2+1].toInt());
+                }
+                drawPolygon(n, v, type, qPainter);
+                ui->label->setPixmap(*qPixmap);
             }
             else if(strList[0].compare(QString("drawEllipse")) == 0)
             {
