@@ -21,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ellipseDialog = new EllipseDialog();
     connect(ellipseDialog, SIGNAL(drawEllipseEvent(int,int,int,int,int)), this, SLOT(onReceive_DrawEllipse(int,int,int,int,int)));
 //----------------------------------------------
+
+//-------------draw polygon dialog--------------
+    polygonDialog = new PolygonDialog();
+    connect(polygonDialog, SIGNAL(drawPolygonEvent(int,int,vector<int>,int)), this, SLOT(onReceive_DrawPolygon(int,int,vector<int>,int)));
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -149,6 +154,7 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 if(isIdExist(id))
                 {
                     qDebug() << "id " << id << " exists, draw line failed.\n";
+                    return;
                 }
                 int x0 = strList[2].toInt();
                 int y0 = strList[3].toInt();
@@ -425,4 +431,9 @@ void MainWindow::drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter
             thisPainter->drawPoint(x - xi, y - yi);
         }
     }
+}
+
+void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> v, int type)
+{
+
 }

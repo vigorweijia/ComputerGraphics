@@ -5,6 +5,7 @@
 #include "NewCanvasDialog.h"
 #include "LineDialog.h"
 #include "EllipseDialog.h"
+#include "PolygonDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -40,6 +41,7 @@ public:
     NewCanvasDialog *newCanvasDialog;
     LineDialog *lineDialog;
     EllipseDialog *ellipseDialog;
+    PolygonDialog *polygonDialog;
 
 
     struct GraphicUnit {
@@ -60,6 +62,7 @@ private:
     void drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter);
+    void drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter);
     void createTempPixmapExceptId(int id);
 
 private slots:
@@ -75,6 +78,7 @@ private slots:
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
     void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
     void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
+    void onReceive_DrawPolygon(int id, int n, vector<int> v, int type);
 };
 
 #endif // MAINWINDOW_H

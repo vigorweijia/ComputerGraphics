@@ -33,7 +33,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="ID"/>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -73,7 +73,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QLineEdit" name="number"/>
       </item>
       <item>
        <spacer name="horizontalSpacer">
@@ -113,7 +113,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_3"/>
+       <widget class="QLineEdit" name="points"/>
       </item>
      </layout>
     </item>
