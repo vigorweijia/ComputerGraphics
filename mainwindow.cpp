@@ -461,6 +461,7 @@ void MainWindow::drawPolygon(int n, vector<int> v, int type, QPainter *thisPaint
         float y0 = (float)v[i*2+1];
         float x1 = (float)v[(i*2+2)%(2*n)];
         float y1 = (float)v[(i*2+3)%(2*n)];
+        //qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
     }
