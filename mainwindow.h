@@ -73,7 +73,7 @@ private:
     void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter);
     void drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter);
-    void setColor(int R, int G, int B);
+    void setColor(int R, int G, int B, QPainter *thisPainter);
     void createTempPixmapExceptId(int id);
 
 private slots:
@@ -91,6 +91,7 @@ private slots:
     void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
     void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
     void onReceive_DrawPolygon(int id, int n, vector<int> v, int type);
+    void onReceive_SetColor(int r, int g, int b);
 };
 
 #endif // MAINWINDOW_H

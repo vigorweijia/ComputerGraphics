@@ -26,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
     polygonDialog = new PolygonDialog();
     connect(polygonDialog, SIGNAL(drawPolygonEvent(int,int,vector<int>,int)), this, SLOT(onReceive_DrawPolygon(int,int,vector<int>,int)));
 //----------------------------------------------
+
+//-------------the color dialog-----------------
+    colorDialog = new ColorDialog();
+    connect(colorDialog, SIGNAL(setColorEvent(int,int,int)), this, SLOT(onReceive_SetColor(int,int,int)));
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -484,4 +489,19 @@ void MainWindow::drawPolygon(int n, vector<int> v, int type, QPainter *thisPaint
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
     }
+}
+
+void MainWindow::on_actionColor_triggered()
+{
+    colorDialog->show();
+}
+
+void MainWindow::onReceive_SetColor(int r, int g, int b)
+{
+    setColor(r, g, b, qPainter);
+}
+
+void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
+{
+    thisPainter->setPen(QColor(R, G, B));
 }

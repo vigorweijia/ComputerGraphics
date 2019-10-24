@@ -26,11 +26,11 @@ void ColorDialog::on_buttonBox_rejected()
 
 void ColorDialog::on_buttonPalette_clicked()
 {
-    QColor qColor = QColorDialog::getColor(Qt::black);
+    QColor qColor = QColorDialog::getColor(Qt::black, this);
     if(qColor.isValid())
     {
-        ui->colorR->text() = QString::number(qColor.red());
-        ui->colorG->text() = QString::number(qColor.green());
-        ui->colorB->text() = QString::number(qColor.blue());
+        ui->colorR->setText(QString::number(qColor.red()));
+        ui->colorG->setText(QString::number(qColor.green()));
+        ui->colorB->setText(QString::number(qColor.blue()));
     }
 }
