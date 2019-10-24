@@ -150,7 +150,8 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("setColor")) == 0)
             {
-                qDebug() << "no function of setColor right now\n";
+                qDebug() << "now at setColor\n";
+                setColor(strList[1].toInt(), strList[2].toInt(), strList[3].toInt(), qPainter);
             }
             else if(strList[0].compare(QString("drawLine")) == 0)
             {
@@ -178,7 +179,7 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("drawPolygon")) == 0)
             {
-                //qDebug() << "no function of drawPolygon right now.\n";
+                qDebug() << "now at drawPolygon.\n";
                 GraphicUnit g;
                 int id = strList[1].toInt();
                 g.id = id;
