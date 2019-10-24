@@ -56,12 +56,13 @@ void MainWindow::createNewCanvas(int width, int height)
     //ui->textBrowser->setText(QString::number(newCanvasWidth)+","+QString::number(height));
     qPixmap = new QPixmap(width, height);
     tempPixmap = new QPixmap(width, height);
+    tempPixmap->fill(Qt::transparent); //整个pixmap改成透明，不然默认是灰色
 
     //-------------Create the QPainter object----------------
     qPainter = new QPainter(qPixmap);
     qPainter->fillRect(0,0,width,height,Qt::white);
     tempPainter = new QPainter(tempPixmap);
-    tempPainter->fillRect(20,20,40,40,Qt::blue);
+    tempPainter->fillRect(30,30,40,40,Qt::blue);
     //-------------------------------------------------------
 
     //-------------Reset the size of Window------------------
