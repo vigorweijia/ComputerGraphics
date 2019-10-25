@@ -88,6 +88,10 @@ void MainWindow::createNewCanvas(int width, int height)
     }
     //-------------------------------------------------------
 
+    //-------------Set default color-------------------------
+    qColor = new QColor(0,0,0);
+    //-------------------------------------------------------
+
     ui->label->setPixmap(*qPixmap);
     ui->tempLabel->setPixmap(*tempPixmap);
     //qPixmap->save("1.bmp");
@@ -173,6 +177,10 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 g.para.push_back(y0);
                 g.para.push_back(x1);
                 g.para.push_back(y1);
+                g.color.r = (char)((qColor->red())&0xff);
+                g.color.g = (char)((qColor->green())&0xff);
+                g.color.b = (char)((qColor->blue())&0xff);
+                v.push_back(g);
                 if(strList[0].compare(QString("DDA"))) drawLineDDA((float)x0, (float)y0, (float)x1, (float)y1, qPainter);
                 if(strList[0].compare(QString("Bresenham"))) drawLineBresenham((float)x0, (float)y0, (float)x1, (float)y1, qPainter);
                 ui->label->setPixmap(*qPixmap);
@@ -187,17 +195,21 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 int n = strList[2].toInt();
                 g.para.push_back(n);
                 int type = (strList[3].compare(QString("DDA")) == 0) ? 0 : 1;
-                vector<int> v;
+                vector<int> tempV;
                 textLine = qTextStream.readLine();
                 strList = textLine.split(" ");
                 for(int i = 0; i < n; i++)
                 {
-                    v.push_back(strList[i*2].toInt());
+                    tempV.push_back(strList[i*2].toInt());
                     g.para.push_back(strList[i*2].toInt());
-                    v.push_back(strList[i*2+1].toInt());
+                    tempV.push_back(strList[i*2+1].toInt());
                     g.para.push_back(strList[i*2+1].toInt());
                 }
-                drawPolygon(n, v, type, qPainter);
+                g.color.r = (char)((qColor->red())&0xff);
+                g.color.g = (char)((qColor->green())&0xff);
+                g.color.b = (char)((qColor->blue())&0xff);
+                v.push_back(g);
+                drawPolygon(n, tempV, type, qPainter);
                 ui->label->setPixmap(*qPixmap);
             }
             else if(strList[0].compare(QString("drawEllipse")) == 0)
@@ -215,6 +227,10 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 g.para.push_back(y);
                 g.para.push_back(rx);
                 g.para.push_back(ry);
+                g.color.r = (char)((qColor->red())&0xff);
+                g.color.g = (char)((qColor->green())&0xff);
+                g.color.b = (char)((qColor->blue())&0xff);
+                v.push_back(g);
                 drawEllipse(x, y, rx, ry, qPainter);
                 ui->label->setPixmap(*qPixmap);
             }
@@ -272,6 +288,9 @@ void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float 
     g.para.push_back(y0);
     g.para.push_back(x1);
     g.para.push_back(y1);
+    g.color.r = (char)((qColor->red())&0xff);
+    g.color.g = (char)((qColor->green())&0xff);
+    g.color.b = (char)((qColor->blue())&0xff);
     v.push_back(g);
     if(type == 0) drawLineDDA(x0, y0, x1, y1, qPainter);
     else if(type == 1) drawLineBresenham(x0, y0, x1, y1, qPainter);
@@ -370,6 +389,9 @@ void MainWindow::onReceive_DrawEllipse(int id, int x, int y, int rx, int ry) {
     g.para.push_back(y);
     g.para.push_back(rx);
     g.para.push_back(ry);
+    g.color.r = (char)((qColor->red())&0xff);
+    g.color.g = (char)((qColor->green())&0xff);
+    g.color.b = (char)((qColor->blue())&0xff);
     v.push_back(g);
     drawEllipse(x, y, rx, ry, qPainter);
     ui->label->setPixmap(*qPixmap);
@@ -463,7 +485,7 @@ void MainWindow::on_actionPolygon_triggered()
     polygonDialog->show();
 }
 
-void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> v, int type)
+void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> tempV, int type)
 {
     if(isIdExist(id)) {
         QMessageBox::warning(this, "ERROR", tr("Drawing error! The ID is repeated."));
@@ -472,20 +494,24 @@ void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> v, int type)
     GraphicUnit g;
     g.id = id;
     g.para.push_back(n);
-    for(int i = 0; i < v.size(); i++) g.para.push_back(v[i]);
+    for(int i = 0; i < tempV.size(); i++) g.para.push_back(tempV[i]);
     g.type = TYPE_POLYGON;
-    drawPolygon(n, v, type, qPainter);
+    g.color.r = (char)((qColor->red())&0xff);
+    g.color.g = (char)((qColor->green())&0xff);
+    g.color.b = (char)((qColor->blue())&0xff);
+    v.push_back(g);
+    drawPolygon(n, tempV, type, qPainter);
     ui->label->setPixmap(*qPixmap);
 }
 
-void MainWindow::drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter)
+void MainWindow::drawPolygon(int n, vector<int> tempV, int type, QPainter *thisPainter)
 {
     for(int i = 0; i < n; i++)
     {
-        float x0 = (float)v[i*2];
-        float y0 = (float)v[i*2+1];
-        float x1 = (float)v[(i*2+2)%(2*n)];
-        float y1 = (float)v[(i*2+3)%(2*n)];
+        float x0 = (float)tempV[i*2];
+        float y0 = (float)tempV[i*2+1];
+        float x1 = (float)tempV[(i*2+2)%(2*n)];
+        float y1 = (float)tempV[(i*2+3)%(2*n)];
         //qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
@@ -504,5 +530,6 @@ void MainWindow::onReceive_SetColor(int r, int g, int b)
 
 void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 {
-    thisPainter->setPen(QColor(R, G, B));
+    *qColor = QColor(R, G, B);
+    thisPainter->setPen(*qColor);
 }
