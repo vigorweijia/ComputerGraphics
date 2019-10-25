@@ -1,2 +1,16 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/myicon">
+        <file>imgs/add.png</file>
+        <file>imgs/bk.png</file>
+        <file>imgs/close.png</file>
+        <file>imgs/Ellipse.png</file>
+        <file>imgs/floppy-icon.png</file>
+        <file>imgs/huaji.png</file>
+        <file>imgs/Line.png</file>
+        <file>imgs/open.png</file>
+        <file>imgs/redo.png</file>
+        <file>imgs/save-as.png</file>
+        <file>imgs/stop-sign.png</file>
+        <file>imgs/txt_files.png</file>
+    </qresource>
+</RCC>

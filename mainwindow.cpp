@@ -533,3 +533,13 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
     *qColor = QColor(R, G, B);
     thisPainter->setPen(*qColor);
 }
+
+void MainWindow::on_actionLineIcon_triggered()
+{
+    if(ui->actionEllipseIcon->isChecked()) ui->actionEllipseIcon->setChecked(false);
+}
+
+void MainWindow::on_actionEllipseIcon_triggered()
+{
+    if(ui->actionLineIcon->isChecked()) ui->actionLineIcon->setChecked(false);
+}

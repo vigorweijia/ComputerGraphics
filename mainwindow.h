@@ -77,21 +77,34 @@ private:
     void createTempPixmapExceptId(int id);
 
 private slots:
+    //--------------File----------------------
     void on_actionNewCanvas_triggered();
     //void on_actionOpen_triggered();
     //void on_actionSave_triggered();
     void on_actionSaveAs_triggered();
     void on_actionImportFromFile_triggered();
+    //----------------------------------------
+
+    //--------------Edit----------------------
     void on_actionResetCanvas_triggered();
     void on_actionColor_triggered();
     void on_actionLine_triggered();
     void on_actionEllipse_triggered();
     void on_actionPolygon_triggered();
+    //----------------------------------------
+
+    //--------------Toolbar-------------------
+    void on_actionLineIcon_triggered();
+    void on_actionEllipseIcon_triggered();
+    //----------------------------------------
+
+    //--------------------------From child dialog--------------------------------------
     void onReceive_NewCanvasDialogAcceptedEvent(int width, int height);
     void onReceive_DrawLine(int id, float x0, float y0, float x1, float y1, int type);
     void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
     void onReceive_DrawPolygon(int id, int n, vector<int> v, int type);
     void onReceive_SetColor(int r, int g, int b);
+    //---------------------------------------------------------------------------------
 };
 
 #endif // MAINWINDOW_H

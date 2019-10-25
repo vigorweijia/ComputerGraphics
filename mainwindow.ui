@@ -91,6 +91,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionLineIcon"/>
+   <addaction name="actionEllipseIcon"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewCanvas">
@@ -168,8 +170,37 @@
     <string>Clip</string>
    </property>
   </action>
+  <action name="actionLineIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Line.png</normaloff>:/myicon/imgs/Line.png</iconset>
+   </property>
+   <property name="text">
+    <string>LineIcon</string>
+   </property>
+   <property name="toolTip">
+    <string>Line</string>
+   </property>
+  </action>
+  <action name="actionEllipseIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Ellipse.png</normaloff>:/myicon/imgs/Ellipse.png</iconset>
+   </property>
+   <property name="text">
+    <string>EllipseIcon</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
