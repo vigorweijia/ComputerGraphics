@@ -19,7 +19,9 @@
 #include <QDialog>
 #include <QColor>
 #include <QPen>
+#include <QMouseEvent>
 
+#define TYPE_NOTHING 0
 #define TYPE_LINE 1
 #define TYPE_POLYGON 2
 #define TYPE_ELLIPSE 3
@@ -46,6 +48,11 @@ public:
     EllipseDialog *ellipseDialog;
     PolygonDialog *polygonDialog;
     ColorDialog *colorDialog;
+    //---------Drag mouse to draw---------
+    int selectedDrawEvent;
+    int clickTimes;
+    int selectedX0,selectedY0,selectedX1,selectedY1;
+    //------------------------------------
 
 
     struct GraphicUnit {
@@ -59,6 +66,12 @@ public:
         }color;
     };
     vector<GraphicUnit> v;
+
+protected:
+    int baseX,baseY; //用于计算相对于label的坐标
+    void mousePressEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
 
 private:
     Ui::MainWindow *ui;

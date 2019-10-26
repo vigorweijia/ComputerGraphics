@@ -31,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     colorDialog = new ColorDialog();
     connect(colorDialog, SIGNAL(setColorEvent(int,int,int)), this, SLOT(onReceive_SetColor(int,int,int)));
 //----------------------------------------------
+
+//-------------Selected Event-------------------
+    selectedDrawEvent = TYPE_NOTHING;
+    clickTimes = 0;
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -72,7 +77,7 @@ void MainWindow::createNewCanvas(int width, int height)
     qPainter = new QPainter(qPixmap);
     qPainter->fillRect(0,0,width,height,Qt::white);
     tempPainter = new QPainter(tempPixmap);
-    tempPainter->fillRect(30,30,40,40,Qt::blue);
+    //tempPainter->fillRect(30,30,40,40,Qt::blue);
     //-------------------------------------------------------
 
     //-------------Reset the size of Window------------------
@@ -86,6 +91,8 @@ void MainWindow::createNewCanvas(int width, int height)
         ui->label->setGeometry(10,10,width,height);
         ui->tempLabel->setGeometry(10,10,width,height);
     }
+    baseX = ui->label->x() + ui->centralWidget->x();
+    baseY = ui->label->y() + ui->centralWidget->y();
     //-------------------------------------------------------
 
     //-------------Set default color-------------------------
@@ -537,9 +544,66 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 void MainWindow::on_actionLineIcon_triggered()
 {
     if(ui->actionEllipseIcon->isChecked()) ui->actionEllipseIcon->setChecked(false);
+    if(ui->actionLineIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
+    else selectedDrawEvent = TYPE_LINE;
 }
 
 void MainWindow::on_actionEllipseIcon_triggered()
 {
     if(ui->actionLineIcon->isChecked()) ui->actionLineIcon->setChecked(false);
+    if(ui->actionEllipseIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
+    else selectedDrawEvent = TYPE_ELLIPSE;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *e)
+{
+    qDebug() << "x:" << e->x() << " y:" << e->y();
+    int relativeX = e->x() - baseX;
+    int relativeY = e->y() - baseY;
+    if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
+    if(selectedDrawEvent == TYPE_NOTHING) return;
+    if(clickTimes == 0)
+    {
+        clickTimes = 1;
+        selectedX0 = relativeX;
+        selectedY0 = relativeY;
+    }
+
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *e)
+{
+    int relativeX = e->x() - baseX;
+    int relativeY = e->y() - baseY;
+    if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
+    if(selectedDrawEvent == TYPE_NOTHING) return;
+    if(clickTimes == 0) return;
+    else
+    {
+        selectedX1 = relativeX;
+        selectedY1 = relativeY;
+        tempPixmap->fill(Qt::transparent);
+        ui->tempLabel->setPixmap(*tempPixmap);
+        if(selectedDrawEvent == TYPE_LINE)
+            drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
+        ui->tempLabel->setPixmap(*tempPixmap);
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *e)
+{
+    int relativeX = e->x() - baseX;
+    int relativeY = e->y() - baseY;
+    if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
+    if(clickTimes == 1)
+    {
+        clickTimes = 0;
+        selectedX1 = relativeX;
+        selectedY1 = relativeY;
+        if(selectedDrawEvent == TYPE_LINE)
+            drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
+        tempPixmap->fill(Qt::transparent);
+        ui->tempLabel->setPixmap(*tempPixmap);
+        ui->label->setPixmap(*qPixmap);
+    }
 }
