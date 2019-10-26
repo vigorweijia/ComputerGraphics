@@ -557,7 +557,7 @@ void MainWindow::on_actionEllipseIcon_triggered()
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
-    qDebug() << "x:" << e->x() << " y:" << e->y();
+    //qDebug() << "x:" << e->x() << " y:" << e->y();
     int relativeX = e->x() - baseX;
     int relativeY = e->y() - baseY;
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
@@ -586,6 +586,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         ui->tempLabel->setPixmap(*tempPixmap);
         if(selectedDrawEvent == TYPE_LINE)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
+        if(selectedDrawEvent == TYPE_ELLIPSE)
+            drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -602,6 +604,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         selectedY1 = relativeY;
         if(selectedDrawEvent == TYPE_LINE)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
+        if(selectedDrawEvent == TYPE_ELLIPSE)
+            drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,qPainter);
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);
