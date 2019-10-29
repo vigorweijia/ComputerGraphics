@@ -28,7 +28,6 @@ SOURCES += \
         mainwindow.cpp \
     NewCanvasDialog.cpp \
     LineDialog.cpp \
-    mydialog.cpp \
     EllipseDialog.cpp \
     PolygonDialog.cpp \
     ColorDialog.cpp
@@ -37,7 +36,6 @@ HEADERS += \
         mainwindow.h \
     NewCanvasDialog.h \
     LineDialog.h \
-    mydialog.h \
     EllipseDialog.h \
     PolygonDialog.h \
     ColorDialog.h
@@ -46,7 +44,6 @@ FORMS += \
         mainwindow.ui \
     NewCanvasDialog.ui \
     LineDialog.ui \
-    mydialog.ui \
     EllipseDialog.ui \
     PolygonDialog.ui \
     ColorDialog.ui
