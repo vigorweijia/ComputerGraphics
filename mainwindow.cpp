@@ -306,7 +306,16 @@ void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float 
 
 void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter)
 {
-    if(x1 - x0 == 0) {QMessageBox::warning(this, "error", tr("vertical!"));return;}
+    if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
+    if(x1 == x0) {
+        if(y1 < y0) swap(y1, y0);
+        for(int yi = (int)y0; yi <= (int)y1; yi++) thisPainter->drawPoint((int)x0, yi);
+        return;
+    }
+    if(y1 == y0) {
+        for(int xi = (int)x0; xi <= (int)x1; xi++) thisPainter->drawPoint(xi, (int)y0);
+        return;
+    }
     float m = (y1 - y0)/(x1 - x0);
     if(abs(m) <= 1) {
         if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
