@@ -323,7 +323,7 @@ void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1, QPainter *t
         float yi = y0;
         for(int xi = (int)x0 + 1; xi <= (int)x1; xi++) {
             yi = (float)yi + m;
-            thisPainter->drawPoint(xi, (int)yi);
+            thisPainter->drawPoint(xi, (int)(yi+0.5)); //四舍五入
         }
     }
     else {
@@ -332,7 +332,7 @@ void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1, QPainter *t
         float xi = x0;
         for(int yi = (int)y0 + 1; yi <= (int)y1; yi++) {
             xi = (float)xi + (1/m);
-            thisPainter->drawPoint((int)xi, yi);
+            thisPainter->drawPoint((int)(xi+0.5), yi); //四舍五入
         }
     }
 }
@@ -364,7 +364,7 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1, QPain
         for(int xi = (int)x0 + 1; xi <= (int)x1; xi++) {
             if(p < 0) p = p + 2*deltaY;
             else p = p + 2*deltaY - 2*deltaX;
-            if(p > 0)
+            if(p >= 0) //边界条件
             {
                 if(m > 0) yi = yi + 1;
                 else yi = yi - 1;
@@ -379,11 +379,13 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1, QPain
         for(int yi = (int)y0 + 1; yi <= (int)y1; yi++) {
             if(p < 0) p = p + 2*deltaX;
             else p = p + 2*deltaX - 2*deltaY;
-            if(p > 0)
+            qDebug() << "p:" << p;
+            if(p >= 0) //边界条件
             {
                 if(m > 0) xi = xi + 1;
                 else xi = xi - 1;
             }
+            qDebug()  << "xi:" << xi << " yi:" << yi;
             thisPainter->drawPoint(xi, yi);
         }
     }
