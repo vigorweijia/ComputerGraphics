@@ -622,3 +622,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         ui->label->setPixmap(*qPixmap);
     }
 }
+
+void MainWindow::on_actionTranslate_triggered()
+{
+
+}
+
+void MainWindow::on_actionRotate_triggered()
+{
+
+}

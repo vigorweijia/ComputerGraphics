@@ -123,8 +123,8 @@ private slots:
     void on_actionLine_triggered();
     void on_actionEllipse_triggered();
     void on_actionPolygon_triggered();
-    //void on_actionTranslate_triggered();
-    //void on_actionRotate_triggered();
+    void on_actionTranslate_triggered();
+    void on_actionRotate_triggered();
     //----------------------------------------
 
     //--------------Toolbar-------------------
