@@ -7,6 +7,7 @@
 #include "EllipseDialog.h"
 #include "PolygonDialog.h"
 #include "ColorDialog.h"
+#include "TranslateDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -52,6 +53,7 @@ public:
     EllipseDialog *ellipseDialog;
     PolygonDialog *polygonDialog;
     ColorDialog *colorDialog;
+    TranslateDialog *translateDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -138,6 +140,7 @@ private slots:
     void onReceive_DrawEllipse(int id, int x, int y, int rx, int ry);
     void onReceive_DrawPolygon(int id, int n, vector<int> v, int type);
     void onReceive_SetColor(int r, int g, int b);
+    void onReceive_Translate(int id, int dx, int dy);
     //---------------------------------------------------------------------------------
 };
 

@@ -32,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(colorDialog, SIGNAL(setColorEvent(int,int,int)), this, SLOT(onReceive_SetColor(int,int,int)));
 //----------------------------------------------
 
+//-------------Translate Dialog-----------------
+    translateDialog = new TranslateDialog();
+    connect(translateDialog, SIGNAL(translateEvent(int,int,int)), this, SLOT(onReceive_Translate(int,int,int)));
+//----------------------------------------------
+
 //-------------Selected Event-------------------
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
@@ -629,6 +634,11 @@ void MainWindow::on_actionTranslate_triggered()
 }
 
 void MainWindow::on_actionRotate_triggered()
+{
+
+}
+
+void MainWindow::onReceive_Translate(int id ,int dx, int dy)
 {
 
 }
