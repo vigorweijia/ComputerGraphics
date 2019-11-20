@@ -56,10 +56,17 @@ bool MainWindow::isIdExist(int id)
 
 void MainWindow::createTempPixmapExceptId(int id)
 {
+    qPainter->fillRect(0,0,newCanvasWidth,newCanvasHeight,Qt::white);
     for(int i = 0; i < v.size(); i++)
     {
         if(v[i].id == id) continue;
-
+        switch (v[i].type) {
+        case TYPE_LINE: drawLineBresenham((float)v[i].para[0],(float)v[i].para[1],(float)v[i].para[2],(float)v[i].para[3],qPainter); break;
+        case TYPE_ELLIPSE: drawEllipse(v[i].para[0],v[i].para[1],v[i].para[2],v[i].para[3],qPainter); break;
+        case TYPE_POLYGON: drawPolygon(v[i].para, 1, qPainter); break;
+        case TYPE_CURVE: break;
+        default: break;
+        }
     }
 }
 
@@ -221,7 +228,7 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 g.color.g = (char)((qColor->green())&0xff);
                 g.color.b = (char)((qColor->blue())&0xff);
                 v.push_back(g);
-                drawPolygon(n, tempV, type, qPainter);
+                drawPolygon(tempV, type, qPainter);
                 ui->label->setPixmap(*qPixmap);
             }
             else if(strList[0].compare(QString("drawEllipse")) == 0)
@@ -296,10 +303,10 @@ void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float 
     GraphicUnit g;
     g.id = id;
     g.type = TYPE_LINE;
-    g.para.push_back(x0);
-    g.para.push_back(y0);
-    g.para.push_back(x1);
-    g.para.push_back(y1);
+    g.para.push_back((int)x0);
+    g.para.push_back((int)y0);
+    g.para.push_back((int)x1);
+    g.para.push_back((int)y1);
     g.color.r = (char)((qColor->red())&0xff);
     g.color.g = (char)((qColor->green())&0xff);
     g.color.b = (char)((qColor->blue())&0xff);
@@ -384,13 +391,13 @@ void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1, QPain
         for(int yi = (int)y0 + 1; yi <= (int)y1; yi++) {
             if(p < 0) p = p + 2*deltaX;
             else p = p + 2*deltaX - 2*deltaY;
-            qDebug() << "p:" << p;
+            //qDebug() << "p:" << p;
             if(p >= 0) //边界条件
             {
                 if(m > 0) xi = xi + 1;
                 else xi = xi - 1;
             }
-            qDebug()  << "xi:" << xi << " yi:" << yi;
+            //qDebug()  << "xi:" << xi << " yi:" << yi;
             thisPainter->drawPoint(xi, yi);
         }
     }
@@ -523,19 +530,22 @@ void MainWindow::onReceive_DrawPolygon(int id, int n, vector<int> tempV, int typ
     g.color.g = (char)((qColor->green())&0xff);
     g.color.b = (char)((qColor->blue())&0xff);
     v.push_back(g);
-    drawPolygon(n, tempV, type, qPainter);
+    drawPolygon(g.para, type, qPainter);
     ui->label->setPixmap(*qPixmap);
 }
 
-void MainWindow::drawPolygon(int n, vector<int> tempV, int type, QPainter *thisPainter)
+void MainWindow::drawPolygon(vector<int> tempV, int type, QPainter *thisPainter)
 {
+    //qDebug() << "paraSize" << tempV.size();
+    int n = tempV[0];
     for(int i = 0; i < n; i++)
     {
-        float x0 = (float)tempV[i*2];
-        float y0 = (float)tempV[i*2+1];
-        float x1 = (float)tempV[(i*2+2)%(2*n)];
-        float y1 = (float)tempV[(i*2+3)%(2*n)];
-        //qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;
+        float x0 = (float)tempV[i*2 +1];
+        float y0 = (float)tempV[i*2+1 +1];
+        float x1 = (float)tempV[(i*2+2)%(2*n) +1];
+        float y1 = (float)tempV[(i*2+3)%(2*n) +1];
+        /*qDebug() << "(i*2+3)%2n+1=" << (i*2+3)%(2*n)+1;
+        qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;*/
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
     }
@@ -630,15 +640,40 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 
 void MainWindow::on_actionTranslate_triggered()
 {
-
-}
-
-void MainWindow::on_actionRotate_triggered()
-{
-
+    translateDialog->show();
 }
 
 void MainWindow::onReceive_Translate(int id ,int dx, int dy)
+{
+    doTranslate(id, dx, dy, qPainter);
+}
+
+void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
+{
+    int index = -1;
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
+    if(index == -1)
+    {
+        QMessageBox::warning(this, "ERROR", tr("No such a graphic unit."));
+        return;
+    }
+
+    switch (v[index].type) {
+    case TYPE_LINE:
+
+        break;
+    case TYPE_ELLIPSE:
+        break;
+    case TYPE_POLYGON:
+        break;
+    case TYPE_CURVE:
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::on_actionRotate_triggered()
 {
 
 }

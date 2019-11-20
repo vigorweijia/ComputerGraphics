@@ -66,7 +66,7 @@ public:
     struct GraphicUnit {
         int id;
         int type;
-        vector<float> para;
+        vector<int> para;
         struct Color{
             char r;
             char g;
@@ -104,9 +104,10 @@ private:
     void drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter);
     void drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter);
-    void drawPolygon(int n, vector<int> v, int type, QPainter *thisPainter);
+    void drawPolygon(vector<int> v, int type, QPainter *thisPainter);
     void setColor(int R, int G, int B, QPainter *thisPainter);
     void createTempPixmapExceptId(int id); //绘制除id以外的所有图元
+    void doTranslate(int id, int x, int y, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
