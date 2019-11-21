@@ -658,13 +658,24 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
         return;
     }
 
+    createTempPixmapExceptId(id);
+
     switch (v[index].type) {
     case TYPE_LINE:
-
+        v[index].para[0] += x; v[index].para[1] += y; v[index].para[2] += x; v[index].para[3] += y;
+        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3],qPainter);
         break;
     case TYPE_ELLIPSE:
+        v[index].para[0] += x; v[index].para[1] += y;
+        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3],qPainter);
         break;
     case TYPE_POLYGON:
+        for(int i = 0; i < 2*v[index].para[0]; i++)
+        {
+            v[index].para[i*2 + 1] += x;
+            v[index].para[i*2 + 2] += y;
+        }
+        drawPolygon(v[index].para, 1, qPainter);
         break;
     case TYPE_CURVE:
         break;
