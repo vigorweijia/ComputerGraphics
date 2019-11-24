@@ -131,6 +131,7 @@ private slots:
     void on_actionPolygon_triggered();
     void on_actionTranslate_triggered();
     void on_actionRotate_triggered();
+    void on_actionScale_triggred();
     //----------------------------------------
 
     //--------------Toolbar-------------------

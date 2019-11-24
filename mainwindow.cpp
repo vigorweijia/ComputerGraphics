@@ -768,3 +768,8 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
     ui->label->setPixmap(*qPixmap);
     setColor(tempR, tempG, tempB, qPainter);
 }
+
+void MainWindow::on_actionScale_triggred()
+{
+
+}
