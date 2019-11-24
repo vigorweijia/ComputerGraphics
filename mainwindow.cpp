@@ -214,21 +214,18 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 int n = strList[2].toInt();
                 g.para.push_back(n);
                 int type = (strList[3].compare(QString("DDA")) == 0) ? 0 : 1;
-                vector<int> tempV;
                 textLine = qTextStream.readLine();
                 strList = textLine.split(" ");
                 for(int i = 0; i < n; i++)
                 {
-                    tempV.push_back(strList[i*2].toInt());
                     g.para.push_back(strList[i*2].toInt());
-                    tempV.push_back(strList[i*2+1].toInt());
                     g.para.push_back(strList[i*2+1].toInt());
                 }
                 g.color.r = (char)((qColor->red())&0xff);
                 g.color.g = (char)((qColor->green())&0xff);
                 g.color.b = (char)((qColor->blue())&0xff);
                 v.push_back(g);
-                drawPolygon(tempV, type, qPainter);
+                drawPolygon(g.para, type, qPainter);
                 ui->label->setPixmap(*qPixmap);
             }
             else if(strList[0].compare(QString("drawEllipse")) == 0)
@@ -255,7 +252,11 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("drawCurve")) == 0)
             {
-                qDebug() << "no function of drawCurve right now.\n";
+                qDebug() << "now at translate.\n";
+                int id = strList[1].toInt();
+                int dx = strList[2].toInt();
+                int dy = strList[3].toInt();
+                doTranslate(id, dx, dy, qPainter);
             }
             else if(strList[0].compare(QString("translate")) == 0)
             {
@@ -663,11 +664,11 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
     switch (v[index].type) {
     case TYPE_LINE:
         v[index].para[0] += x; v[index].para[1] += y; v[index].para[2] += x; v[index].para[3] += y;
-        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3],qPainter);
+        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_ELLIPSE:
         v[index].para[0] += x; v[index].para[1] += y;
-        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3],qPainter);
+        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
         for(int i = 0; i < 2*v[index].para[0]; i++)
@@ -675,13 +676,14 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
             v[index].para[i*2 + 1] += x;
             v[index].para[i*2 + 2] += y;
         }
-        drawPolygon(v[index].para, 1, qPainter);
+        drawPolygon(v[index].para, 1, thisPainter);
         break;
     case TYPE_CURVE:
         break;
     default:
         break;
     }
+    ui->label->setPixmap(*qPixmap);
 }
 
 void MainWindow::on_actionRotate_triggered()
