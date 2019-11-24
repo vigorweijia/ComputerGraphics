@@ -66,6 +66,8 @@ void MainWindow::createTempPixmapExceptId(int id)
     for(int i = 0; i < v.size(); i++)
     {
         if(v[i].id == id) continue;
+        int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+        setColor(v[i].color.r&0x000000ff, v[i].color.g&0x000000ff, v[i].color.b&0x000000ff, qPainter);
         switch (v[i].type) {
         case TYPE_LINE: drawLineBresenham((float)v[i].para[0],(float)v[i].para[1],(float)v[i].para[2],(float)v[i].para[3],qPainter); break;
         case TYPE_ELLIPSE: drawEllipse(v[i].para[0],v[i].para[1],v[i].para[2],v[i].para[3],qPainter); break;
@@ -73,6 +75,7 @@ void MainWindow::createTempPixmapExceptId(int id)
         case TYPE_CURVE: break;
         default: break;
         }
+        setColor(tempR, tempG, tempB, qPainter);
     }
 }
 
@@ -671,6 +674,8 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
     }
 
     createTempPixmapExceptId(id);
+    int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
 
     switch (v[index].type) {
     case TYPE_LINE:
@@ -695,6 +700,7 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
         break;
     }
     ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }
 
 void MainWindow::on_actionRotate_triggered()
@@ -718,6 +724,8 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
     }
 
     createTempPixmapExceptId(id);
+    int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
 
     float pi = 3.1415926535f;
     float COS = cos((float)angle*pi/180);
@@ -758,4 +766,5 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
         break;
     }
     ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }
