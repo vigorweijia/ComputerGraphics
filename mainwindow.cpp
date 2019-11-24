@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -257,19 +258,24 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("drawCurve")) == 0)
             {
+                qDebug() << "no function of drawCurve right now.\n";
+            }
+            else if(strList[0].compare(QString("translate")) == 0)
+            {    
                 qDebug() << "now at translate.\n";
                 int id = strList[1].toInt();
                 int dx = strList[2].toInt();
                 int dy = strList[3].toInt();
                 doTranslate(id, dx, dy, qPainter);
             }
-            else if(strList[0].compare(QString("translate")) == 0)
-            {
-                qDebug() << "no function of translate right now.\n";
-            }
             else if(strList[0].compare(QString("rotate")) == 0)
             {
-                qDebug() << "no function of rotate right now.\n";
+                qDebug() << "now at rotate.\n";
+                int id = strList[1].toInt();
+                int cx = strList[2].toInt();
+                int cy = strList[3].toInt();
+                int angle = strList[4].toInt();
+                doRotate(id, cx, cy, angle, qPainter);
             }
             else if(strList[0].compare(QString("scale")) == 0)
             {
@@ -660,7 +666,7 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
     for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
     if(index == -1)
     {
-        QMessageBox::warning(this, "ERROR", tr("No such a graphic unit."));
+        QMessageBox::warning(this, "ERROR", QString("No such a graphic unit of ") + QString::number(id) + QString("."));
         return;
     }
 
@@ -693,15 +699,55 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
 
 void MainWindow::on_actionRotate_triggered()
 {
-
+    rotateDialog->show();
 }
 
 void MainWindow::onReceive_Rotate(int id, int cx, int cy, int angle)
 {
-
+    doRotate(id, cx, cy, angle, qPainter);
 }
 
 void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter)
 {
+    int index = -1;
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
+    if(index == -1)
+    {
+        QMessageBox::warning(this, "Error", QString("No such a graphic unit of ") + QString::number(id) + QString("."));
+        return;
+    }
 
+    createTempPixmapExceptId(id);
+
+    switch (v[index].type) {
+    case TYPE_LINE:
+        for(int i = 0; i < 2; i++)
+        {
+            v[index].para[i*2] = cx + (v[index].para[i*2]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*sin((float)angle/3.1415926535f);
+            v[index].para[i*2+1] = cy + (v[index].para[i*2]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*cos((float)angle/3.1415926535f);
+        }
+        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        break;
+    case TYPE_ELLIPSE:
+        for(int i = 0; i < 2; i++)
+        {
+            v[index].para[i*2] = cx + (v[index].para[i*2]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*sin((float)angle/3.1415926535f);
+            v[index].para[i*2+1] = cy + (v[index].para[i*2]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*cos((float)angle/3.1415926535f);
+        }
+        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        break;
+    case TYPE_POLYGON:
+        for(int i = 0; i < 2*v[index].para[0]; i++)
+        {
+            v[index].para[i*2 + 1] = cx + (v[index].para[i*2 + 1]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1 + 1] - cy)*sin((float)angle/3.1415926535f);
+            v[index].para[i*2+1 + 1] = cy + (v[index].para[i*2 + 1]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1 + 1] - cy)*cos((float)angle/3.1415926535f);
+        }
+        drawPolygon(v[index].para, 1, thisPainter);
+        break;
+    case TYPE_CURVE:
+        break;
+    default:
+        break;
+    }
+    ui->label->setPixmap(*qPixmap);
 }
