@@ -466,7 +466,7 @@ void MainWindow::drawEllipse(int x, int y, int rx, int ry, QPainter *thisPainter
             thisPainter->drawPoint(x + xi, y - yi);
             thisPainter->drawPoint(x - xi, y - yi);
         }
-        qDebug() << xi << " " << yi << "\n";
+        //qDebug() << xi << " " << yi << "\n";
     }
     /*xi = lastX, yi = lastY;
     float p2k = (float)ry*(float)ry*((float)xi+0.5f)*((float)xi+0.5f) + (float)rx*rx*(yi-1) - (float)rx*rx*ry*ry;
@@ -556,8 +556,8 @@ void MainWindow::drawPolygon(vector<int> tempV, int type, QPainter *thisPainter)
         float y0 = (float)tempV[i*2+1 +1];
         float x1 = (float)tempV[(i*2+2)%(2*n) +1];
         float y1 = (float)tempV[(i*2+3)%(2*n) +1];
-        /*qDebug() << "(i*2+3)%2n+1=" << (i*2+3)%(2*n)+1;
-        qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;*/
+        /*qDebug() << "(i*2+3)%2n+1=" << (i*2+3)%(2*n)+1;*/
+        qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
     }
@@ -719,28 +719,36 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
 
     createTempPixmapExceptId(id);
 
+    float pi = 3.1415926535f;
+    float COS = cos((float)angle*pi/180);
+    float SIN = sin((float)angle*pi/180);
     switch (v[index].type) {
     case TYPE_LINE:
         for(int i = 0; i < 2; i++)
         {
-            v[index].para[i*2] = cx + (v[index].para[i*2]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*sin((float)angle/3.1415926535f);
-            v[index].para[i*2+1] = cy + (v[index].para[i*2]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*cos((float)angle/3.1415926535f);
+            int originX = v[index].para[i*2], originY = v[index].para[i*2+1]; //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            v[index].para[i*2] = cx + (originX - cx)*COS - (originY - cy)*SIN;
+            v[index].para[i*2+1] = cy + (originX - cx)*SIN - (originY - cy)*COS;
         }
         drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_ELLIPSE:
         for(int i = 0; i < 2; i++)
         {
-            v[index].para[i*2] = cx + (v[index].para[i*2]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*sin((float)angle/3.1415926535f);
-            v[index].para[i*2+1] = cy + (v[index].para[i*2]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1] - cy)*cos((float)angle/3.1415926535f);
+            int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
+            v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN);
+            v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS);
         }
         drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
         for(int i = 0; i < 2*v[index].para[0]; i++)
         {
-            v[index].para[i*2 + 1] = cx + (v[index].para[i*2 + 1]-cx)*cos((float)angle/3.1415926535f) - (v[index].para[i*2+1 + 1] - cy)*sin((float)angle/3.1415926535f);
-            v[index].para[i*2+1 + 1] = cy + (v[index].para[i*2 + 1]-cx)*sin((float)angle/3.1415926535f) - (v[index].para[i*2+1 + 1] - cy)*cos((float)angle/3.1415926535f);
+            int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2 + 1] = cx + (originX - cx)*COS - (originY - cy)*SIN;
+            v[index].para[i*2 + 2] = cy + (originX - cx)*SIN + (originY - cy)*COS;
+            qDebug() << "sin:" << sin((float)angle*pi/180) << " cos:" << cos((float)angle*pi/180);
+            qDebug() << "x:" << v[index].para[i*2 + 1] << " y:" << v[index].para[i*2 + 2];
         }
         drawPolygon(v[index].para, 1, thisPainter);
         break;
