@@ -556,8 +556,8 @@ void MainWindow::drawPolygon(vector<int> tempV, int type, QPainter *thisPainter)
         float y0 = (float)tempV[i*2+1 +1];
         float x1 = (float)tempV[(i*2+2)%(2*n) +1];
         float y1 = (float)tempV[(i*2+3)%(2*n) +1];
-        /*qDebug() << "(i*2+3)%2n+1=" << (i*2+3)%(2*n)+1;*/
-        qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;
+        /*qDebug() << "(i*2+3)%2n+1=" << (i*2+3)%(2*n)+1;
+        qDebug() << "From " << x0 << "," << y0 << " to " << x1 << "," << y1;*/
         if(type == 0) drawLineDDA(x0, y0, x1, y1, thisPainter);
         else if(type == 1) drawLineBresenham(x0, y0, x1, y1, thisPainter);
     }
@@ -682,7 +682,7 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
         drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
-        for(int i = 0; i < 2*v[index].para[0]; i++)
+        for(int i = 0; i < v[index].para[0]; i++)
         {
             v[index].para[i*2 + 1] += x;
             v[index].para[i*2 + 2] += y;
@@ -727,8 +727,8 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
         for(int i = 0; i < 2; i++)
         {
             int originX = v[index].para[i*2], originY = v[index].para[i*2+1]; //!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            v[index].para[i*2] = cx + (originX - cx)*COS - (originY - cy)*SIN;
-            v[index].para[i*2+1] = cy + (originX - cx)*SIN - (originY - cy)*COS;
+            v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS + 0.5f);
         }
         drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
@@ -736,17 +736,17 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
         for(int i = 0; i < 2; i++)
         {
             int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
-            v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN);
-            v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS);
+            v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS + 0.5f);
         }
         drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
-        for(int i = 0; i < 2*v[index].para[0]; i++)
+        for(int i = 0; i < v[index].para[0]; i++)
         {
             int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2 + 1] = cx + (originX - cx)*COS - (originY - cy)*SIN;
-            v[index].para[i*2 + 2] = cy + (originX - cx)*SIN + (originY - cy)*COS;
+            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
             qDebug() << "sin:" << sin((float)angle*pi/180) << " cos:" << cos((float)angle*pi/180);
             qDebug() << "x:" << v[index].para[i*2 + 1] << " y:" << v[index].para[i*2 + 2];
         }
