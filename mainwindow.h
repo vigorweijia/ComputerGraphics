@@ -8,6 +8,7 @@
 #include "PolygonDialog.h"
 #include "ColorDialog.h"
 #include "TranslateDialog.h"
+#include "RotateDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -54,6 +55,7 @@ public:
     PolygonDialog *polygonDialog;
     ColorDialog *colorDialog;
     TranslateDialog *translateDialog;
+    RotateDialog *rotateDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -108,6 +110,7 @@ private:
     void setColor(int R, int G, int B, QPainter *thisPainter);
     void createTempPixmapExceptId(int id); //绘制除id以外的所有图元
     void doTranslate(int id, int x, int y, QPainter *thisPainter);
+    void doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
@@ -142,6 +145,7 @@ private slots:
     void onReceive_DrawPolygon(int id, int n, vector<int> v, int type);
     void onReceive_SetColor(int r, int g, int b);
     void onReceive_Translate(int id, int dx, int dy);
+    void onReceive_Rotate(int id, int cx, int cy, int angle);
     //---------------------------------------------------------------------------------
 };
 

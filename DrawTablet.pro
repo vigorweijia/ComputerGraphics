@@ -31,7 +31,8 @@ SOURCES += \
     EllipseDialog.cpp \
     PolygonDialog.cpp \
     ColorDialog.cpp \
-    TranslateDialog.cpp
+    TranslateDialog.cpp \
+    RotateDialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +41,8 @@ HEADERS += \
     EllipseDialog.h \
     PolygonDialog.h \
     ColorDialog.h \
-    TranslateDialog.h
+    TranslateDialog.h \
+    RotateDialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -49,7 +51,8 @@ FORMS += \
     EllipseDialog.ui \
     PolygonDialog.ui \
     ColorDialog.ui \
-    TranslateDialog.ui
+    TranslateDialog.ui \
+    RotateDialog.ui
 
 RESOURCES += \
     resources.qrc

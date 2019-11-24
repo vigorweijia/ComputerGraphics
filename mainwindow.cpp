@@ -37,6 +37,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(translateDialog, SIGNAL(translateEvent(int,int,int)), this, SLOT(onReceive_Translate(int,int,int)));
 //----------------------------------------------
 
+//-------------Rotate Dialog--------------------
+    rotateDialog = new RotateDialog();
+    connect(rotateDialog, SIGNAL(rotateEvent(int,int,int,int)), this, SLOT(onReceive_Rotate(int,int,int,int)));
+//----------------------------------------------
+
 //-------------Selected Event-------------------
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
@@ -687,6 +692,16 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
 }
 
 void MainWindow::on_actionRotate_triggered()
+{
+
+}
+
+void MainWindow::onReceive_Rotate(int id, int cx, int cy, int angle)
+{
+
+}
+
+void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter)
 {
 
 }
