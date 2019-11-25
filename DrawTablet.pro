@@ -33,7 +33,8 @@ SOURCES += \
     ColorDialog.cpp \
     TranslateDialog.cpp \
     RotateDialog.cpp \
-    ScaleDialog.cpp
+    ScaleDialog.cpp \
+    ClipDialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +45,8 @@ HEADERS += \
     ColorDialog.h \
     TranslateDialog.h \
     RotateDialog.h \
-    ScaleDialog.h
+    ScaleDialog.h \
+    ClipDialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -55,7 +57,8 @@ FORMS += \
     ColorDialog.ui \
     TranslateDialog.ui \
     RotateDialog.ui \
-    ScaleDialog.ui
+    ScaleDialog.ui \
+    ClipDialog.ui
 
 RESOURCES += \
     resources.qrc

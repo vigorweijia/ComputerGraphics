@@ -48,6 +48,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(scaleDialog, SIGNAL(scaleEvent(int,int,int,float)), this, SLOT(onReceive_Scale(int,int,int,float)));
 //----------------------------------------------
 
+//-------------Clip Dialog----------------------
+    clipDialog = new ClipDialog();
+    connect(clipDialog, SIGNAL(clipEvent(int,int,int,int,int,int)), this, SLOT(onReceive_Clip(int,int,int,int,int,int)));
+//----------------------------------------------
+
 //-------------Selected Event-------------------
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
@@ -838,4 +843,25 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
     }
     ui->label->setPixmap(*qPixmap);
     setColor(tempR, tempG, tempB, qPainter);
+}
+
+void MainWindow::on_actionClip_triggered()
+{
+    clipDialog->show();
+}
+
+void MainWindow::onReceive_Clip(int id, int x1, int x2, int y1, int y2, int type)
+{
+    if(type == 0) doClipCohenSutherland(id, x1, x2, y1, y2, qPainter);
+    if(type == 1) doClipLiangBarsky(id, x1, x2, y1, y2, qPainter);
+}
+
+void MainWindow::doClipCohenSutherland(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter)
+{
+
+}
+
+void MainWindow::doClipLiangBarsky(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter)
+{
+
 }

@@ -10,6 +10,7 @@
 #include "TranslateDialog.h"
 #include "RotateDialog.h"
 #include "ScaleDialog.h"
+#include "ClipDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -58,6 +59,7 @@ public:
     TranslateDialog *translateDialog;
     RotateDialog *rotateDialog;
     ScaleDialog *scaleDialog;
+    ClipDialog *clipDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -114,6 +116,8 @@ private:
     void doTranslate(int id, int x, int y, QPainter *thisPainter);
     void doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter);
     void doScale(int id, int cx, int cy, float scale, QPainter *thisPainter);
+    void doClipCohenSutherland(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter);
+    void doClipLiangBarsky(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
@@ -135,6 +139,7 @@ private slots:
     void on_actionTranslate_triggered();
     void on_actionRotate_triggered();
     void on_actionScale_triggered();
+    void on_actionClip_triggered();
     //----------------------------------------
 
     //--------------Toolbar-------------------
@@ -151,6 +156,7 @@ private slots:
     void onReceive_Translate(int id, int dx, int dy);
     void onReceive_Rotate(int id, int cx, int cy, int angle);
     void onReceive_Scale(int id, int cx, int cy, float scale);
+    void onReceive_Clip(int id, int x1, int x2, int y1, int y2, int type);
     //---------------------------------------------------------------------------------
 };
 
