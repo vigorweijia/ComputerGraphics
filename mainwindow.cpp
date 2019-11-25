@@ -850,18 +850,79 @@ void MainWindow::on_actionClip_triggered()
     clipDialog->show();
 }
 
-void MainWindow::onReceive_Clip(int id, int x1, int x2, int y1, int y2, int type)
+void MainWindow::onReceive_Clip(int id, int x1, int y1, int x2, int y2, int type)
 {
-    if(type == 0) doClipCohenSutherland(id, x1, x2, y1, y2, qPainter);
-    if(type == 1) doClipLiangBarsky(id, x1, x2, y1, y2, qPainter);
+    if(type == 0) doClipCohenSutherland(id, x1, y1, x2, y2, qPainter);
+    if(type == 1) doClipLiangBarsky(id, x1, y1, x2, y2, qPainter);
 }
 
-void MainWindow::doClipCohenSutherland(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter)
+void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter)
 {
+    int index = -1;
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = id; break;}
+    if(index == -1 || v[index].type != TYPE_LINE)
+    {
+        QMessageBox::warning(this, "ERROR", tr("this graphic unit doesn't exist or isn't a Line."));
+        return;
+    }
 
+    createTempPixmapExceptId(id);
+    int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
+
+    int endCode1 = 0, endCode2 = 0;
+    int endX1 = v[index].para[0], endY1 = v[index].para[1], endX2 = v[index].para[2], endY2 = v[index].para[3];
+    if(endX1 < x1) endCode1 += 1; //left
+    if(endX1 > x2) endCode1 += 2; //right
+    if(endY1 < y1) endCode1 += 4; //down
+    if(endY1 > y2) endCode1 += 8; //up
+    if(endX2 < x1) endCode2 += 1; //left
+    if(endX2 > x2) endCode2 += 2; //right
+    if(endY2 < y1) endCode2 += 4; //down
+    if(endY2 > y2) endCode2 += 8; //up
+
+    if((endCode1|endCode2) == 0) //inside area
+    {
+        drawLineBresenham(endX1, endY1, endX2, endY2, qPainter);
+    }
+    else if((endCode1&endCode2) != 0) //complete outside area
+    {
+        v[index].para[0] = v[index].para[1] = v[index].para[2] = v[index].para[3] = 0;
+    }
+    else
+    {
+        int orCode = endCode1 | endCode2;
+        if(orCode & 1) //left
+        {
+            int newY = (int)((float)(x1 - endX2)*(endY1 - endY2)/(endX1 - endX2) + (float)endY2 + 0.5f);
+            if(endX1 < x1) {endX1 = x1; endY1 = newY;}
+            else if(endX2 < x1) {endX2 = x1; endY2 = newY;}
+        }
+        if(orCode & 2)
+        {
+            int newY = (int)((float)(x1 - endX2)*(endY1 - endY2)/(endX1 - endX2) + (float)endY2 + 0.5f);
+            if(endX1 > x2) {endX1 = x2; endY1 = newY;}
+            else if(endX2 > x2) {endX2 = x2; endY2 = newY;}
+        }
+        if(orCode & 4)
+        {
+            int newX = (int)((float)(y1 - endY2)*(endX1 - endX2)/(endY1 - endY2) + (float)endX2 + 0.5f);
+            if(endY1 < y1) {endX1 = newX; endY1 = y1;}
+            else if(endY2 < y1) {endX2 = newX; endY2 = y1;}
+        }
+        if(orCode & 8)
+        {
+            int newX = (int)((float)(y1 - endY2)*(endX1 - endX2)/(endY1 - endY2) + (float)endX2 + 0.5f);
+            if(endY1 > y2) {endX1 = newX; endY1 = y2;}
+            else if(endY2 > y2) {endX2 = newX; endY2 = y2;}
+        }
+    }
+
+    ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }
 
-void MainWindow::doClipLiangBarsky(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter)
+void MainWindow::doClipLiangBarsky(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter)
 {
 
 }
