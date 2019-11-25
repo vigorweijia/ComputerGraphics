@@ -781,5 +781,56 @@ void MainWindow::on_actionScale_triggered()
 
 void MainWindow::onReceive_Scale(int id, int cx, int cy, float scale)
 {
+    doScale(id, cx, cy, scale, qPainter);
+}
 
+void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPainter)
+{
+    int index = -1;
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
+    if(index == -1)
+    {
+        QMessageBox::warning(this, "Error", QString("No such a graphic unit of ") + QString::number(id) + QString("."));
+        return;
+    }
+
+    createTempPixmapExceptId(id);
+    int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
+
+    switch (v[index].type) {
+    case TYPE_LINE:
+        for(int i = 0; i < 2; i++)
+        {
+            int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
+            v[index].para[i*2] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            v[index].para[i*2+1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        }
+        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        break;
+    case TYPE_ELLIPSE:
+        for(int i = 0; i < 2; i++)
+        {
+            int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
+            v[index].para[i*2] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            v[index].para[i*2+1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        }
+        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        break;
+    case TYPE_POLYGON:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        }
+        drawPolygon(v[index].para, 1, thisPainter);
+        break;
+    case TYPE_CURVE:
+        break;
+    default:
+        break;
+    }
+    ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }

@@ -113,6 +113,7 @@ private:
     void createTempPixmapExceptId(int id); //绘制除id以外的所有图元
     void doTranslate(int id, int x, int y, QPainter *thisPainter);
     void doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter);
+    void doScale(int id, int cx, int cy, float scale, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
