@@ -43,6 +43,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(rotateDialog, SIGNAL(rotateEvent(int,int,int,int)), this, SLOT(onReceive_Rotate(int,int,int,int)));
 //----------------------------------------------
 
+//-------------Scale Dialog---------------------
+    scaleDialog = new ScaleDialog();
+    connect(scaleDialog, SIGNAL(scaleEvent(int,int,int,float)), this, SLOT(onReceive_Scale(int,int,int,float)));
+//----------------------------------------------
+
 //-------------Selected Event-------------------
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
@@ -769,7 +774,12 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
     setColor(tempR, tempG, tempB, qPainter);
 }
 
-void MainWindow::on_actionScale_triggred()
+void MainWindow::on_actionScale_triggered()
+{
+    scaleDialog->show();
+}
+
+void MainWindow::onReceive_Scale(int id, int cx, int cy, float scale)
 {
 
 }

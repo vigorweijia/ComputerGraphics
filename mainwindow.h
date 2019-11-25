@@ -9,6 +9,7 @@
 #include "ColorDialog.h"
 #include "TranslateDialog.h"
 #include "RotateDialog.h"
+#include "ScaleDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -56,6 +57,7 @@ public:
     ColorDialog *colorDialog;
     TranslateDialog *translateDialog;
     RotateDialog *rotateDialog;
+    ScaleDialog *scaleDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -131,7 +133,7 @@ private slots:
     void on_actionPolygon_triggered();
     void on_actionTranslate_triggered();
     void on_actionRotate_triggered();
-    void on_actionScale_triggred();
+    void on_actionScale_triggered();
     //----------------------------------------
 
     //--------------Toolbar-------------------
@@ -147,6 +149,7 @@ private slots:
     void onReceive_SetColor(int r, int g, int b);
     void onReceive_Translate(int id, int dx, int dy);
     void onReceive_Rotate(int id, int cx, int cy, int angle);
+    void onReceive_Scale(int id, int cx, int cy, float scale);
     //---------------------------------------------------------------------------------
 };
 
