@@ -116,8 +116,8 @@ private:
     void doTranslate(int id, int x, int y, QPainter *thisPainter);
     void doRotate(int id, int cx, int cy, int angle, QPainter *thisPainter);
     void doScale(int id, int cx, int cy, float scale, QPainter *thisPainter);
-    void doClipCohenSutherland(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter);
-    void doClipLiangBarsky(int id, int x1, int x2, int y1, int y2, QPainter *thisPainter);
+    void doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
+    void doClipLiangBarsky(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
@@ -156,7 +156,7 @@ private slots:
     void onReceive_Translate(int id, int dx, int dy);
     void onReceive_Rotate(int id, int cx, int cy, int angle);
     void onReceive_Scale(int id, int cx, int cy, float scale);
-    void onReceive_Clip(int id, int x1, int x2, int y1, int y2, int type);
+    void onReceive_Clip(int id, int x1, int y1, int x2, int y2, int type);
     //---------------------------------------------------------------------------------
 };
 

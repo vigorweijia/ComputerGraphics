@@ -49,7 +49,7 @@
       <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>[x1,x2]</string>
+         <string>(x1,y1)</string>
         </property>
        </widget>
       </item>
@@ -57,7 +57,7 @@
        <widget class="QLineEdit" name="x1"/>
       </item>
       <item>
-       <widget class="QLineEdit" name="x2"/>
+       <widget class="QLineEdit" name="y1"/>
       </item>
       <item>
        <widget class="QLabel" name="label_5">
@@ -73,12 +73,12 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>[y1,y2]</string>
+         <string>(x2,y2)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="y1"/>
+       <widget class="QLineEdit" name="x2"/>
       </item>
       <item>
        <widget class="QLineEdit" name="y2"/>

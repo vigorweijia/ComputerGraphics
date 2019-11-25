@@ -21,7 +21,7 @@ void ClipDialog::on_cohenSutherland_clicked()
     int x2 = ui->x2->text().toInt();
     int y1 = ui->y1->text().toInt();
     int y2 = ui->y2->text().toInt();
-    emit clipEvent(id, x1, x2, y1, y2, 0);
+    emit clipEvent(id, x1, y1, x2, y2, 0);
     this->close();
 }
 
@@ -33,7 +33,7 @@ void ClipDialog::on_liangBarsky_clicked()
     int x2 = ui->x2->text().toInt();
     int y1 = ui->y1->text().toInt();
     int y2 = ui->y2->text().toInt();
-    emit clipEvent(id, x1, x2, y1, y2, 1);
+    emit clipEvent(id, x1, y1, x2, y2, 1);
     this->close();
 }
 

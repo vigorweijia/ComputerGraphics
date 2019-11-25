@@ -21,7 +21,7 @@ private slots:
     void on_cancel_clicked();
 
 signals:
-    void clipEvent(int id, int x1, int x2, int y1, int y2, int type);
+    void clipEvent(int id, int x1, int y1, int x2, int y2, int type);
 
 private:
     Ui::ClipDialog *ui;
