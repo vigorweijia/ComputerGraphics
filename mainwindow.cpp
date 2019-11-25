@@ -287,7 +287,12 @@ void MainWindow::on_actionImportFromFile_triggered() {
             }
             else if(strList[0].compare(QString("scale")) == 0)
             {
-                qDebug() << "no function of scale right now.\n";
+                qDebug() << "now at scale.\n";
+                int id = strList[1].toInt();
+                int cx = strList[2].toInt();
+                int cy = strList[3].toInt();
+                float scale = strList[4].toFloat();
+                doScale(id, cx, cy, scale, qPainter);
             }
             else if(strList[0].compare(QString("clip")) == 0)
             {
