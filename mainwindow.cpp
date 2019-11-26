@@ -859,12 +859,13 @@ void MainWindow::onReceive_Clip(int id, int x1, int y1, int x2, int y2, int type
 void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter)
 {
     int index = -1;
-    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = id; break;}
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
     if(index == -1 || v[index].type != TYPE_LINE)
     {
         QMessageBox::warning(this, "ERROR", tr("this graphic unit doesn't exist or isn't a Line."));
         return;
     }
+
 
     createTempPixmapExceptId(id);
     int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
@@ -898,24 +899,32 @@ void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, Q
             if(endX1 < x1) {endX1 = x1; endY1 = newY;}
             else if(endX2 < x1) {endX2 = x1; endY2 = newY;}
         }
-        if(orCode & 2)
+        if(orCode & 2) //right
         {
-            int newY = (int)((float)(x1 - endX2)*(endY1 - endY2)/(endX1 - endX2) + (float)endY2 + 0.5f);
+            int newY = (int)((float)(x2 - endX2)*(endY1 - endY2)/(endX1 - endX2) + (float)endY2 + 0.5f);
             if(endX1 > x2) {endX1 = x2; endY1 = newY;}
             else if(endX2 > x2) {endX2 = x2; endY2 = newY;}
         }
-        if(orCode & 4)
+        if(orCode & 4) //down
         {
             int newX = (int)((float)(y1 - endY2)*(endX1 - endX2)/(endY1 - endY2) + (float)endX2 + 0.5f);
             if(endY1 < y1) {endX1 = newX; endY1 = y1;}
             else if(endY2 < y1) {endX2 = newX; endY2 = y1;}
         }
-        if(orCode & 8)
+        if(orCode & 8) //up
         {
-            int newX = (int)((float)(y1 - endY2)*(endX1 - endX2)/(endY1 - endY2) + (float)endX2 + 0.5f);
+            int newX = (int)((float)(y2 - endY2)*(endX1 - endX2)/(endY1 - endY2) + (float)endX2 + 0.5f);
             if(endY1 > y2) {endX1 = newX; endY1 = y2;}
             else if(endY2 > y2) {endX2 = newX; endY2 = y2;}
         }
+        //qDebug() << "(x1,y1):" << x1 << "," << y2 << " (x2,y2):" << x2 << "," << y2;
+        //qDebug() << "endX1:" << endX1 << " endY1:" << endY1;
+        //qDebug() << "endX2:" << endX2 << " endY2:" << endY2;
+        v[index].para[0] = endX1;
+        v[index].para[1] = endY1;
+        v[index].para[2] = endX2;
+        v[index].para[3] = endY2;
+        drawLineBresenham(endX1, endY1, endX2, endY2, qPainter);
     }
 
     ui->label->setPixmap(*qPixmap);
