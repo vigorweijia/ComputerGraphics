@@ -947,5 +947,73 @@ void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, Q
 
 void MainWindow::doClipLiangBarsky(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter)
 {
+    int index = -1;
+    for(int i = 0; i < v.size(); i++) if(v[i].id == id) {index = i; break;}
+    if(index == -1 || v[index].type != TYPE_LINE)
+    {
+        QMessageBox::warning(this, "ERROR", tr("this graphic unit doesn't exist or isn't a Line."));
+        return;
+    }
 
+
+    createTempPixmapExceptId(id);
+    int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
+
+    int xs = v[index].para[0];
+    int ys = v[index].para[1];
+    int xt = v[index].para[2];
+    int yt = v[index].para[3];
+    int p[4], q[4];
+    float u1 = 0, u2 = 1;
+    p[0] = xs - xt;
+    p[1] = xt - xs;
+    p[2] = ys - yt;
+    p[3] = yt - ys;
+    q[0] = xs - x1;
+    q[1] = x2 - xs;
+    q[2] = ys - y1;
+    q[3] = y2 - ys;
+    bool flag = false;
+    for(int i = 0; i < 4; i++)
+    {
+        if(p[i] == 0 && q[i] < 0)
+        {
+            flag = true;
+        }
+        else
+        {
+            float r = (float) q[i] / p[i];
+            if(p[i] < 0)
+            {
+                u1 = (u1>r)?(u1):(r);
+            }
+            else
+            {
+                u2 = (u2<r)?(u2):(r);
+            }
+            if(u1 > u2) flag = true;
+        }
+    }
+    if(flag == false)
+    {
+        v[index].para[0] = xs + u1*(xt - xs);
+        v[index].para[1] = ys + u1*(yt - ys);
+        v[index].para[2] = xs + u2*(xt - xs);
+        v[index].para[3] = ys + u2*(yt - ys);
+    }
+    else
+    {
+        v[index].para[0] = 0;
+        v[index].para[1] = 0;
+        v[index].para[2] = 0;
+        v[index].para[3] = 0;
+    }
+
+    //qDebug() << v[index].para[0] << " " << v[index].para[1];
+    //qDebug() << v[index].para[2] << " " << v[index].para[3];
+    drawLineBresenham(v[index].para[0], v[index].para[1], v[index].para[2], v[index].para[3], qPainter);
+
+    ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }
