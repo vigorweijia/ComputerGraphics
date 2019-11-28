@@ -66,7 +66,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::execNonGui(QString fileName, QString savingDir)
 {
-
+    doImportFromFile(fileName, savingDir);
 }
 
 bool MainWindow::isIdExist(int id)
@@ -169,6 +169,11 @@ void MainWindow::on_actionSaveAs_triggered()
 
 void MainWindow::on_actionImportFromFile_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Open File", "/home", "Text File(*.txt)");
+    doImportFromFile(fileName, QString(""));
+}
+
+void MainWindow::doImportFromFile(QString fileName, QString savingDir)
+{
     if(!fileName.isNull())
     {
         QFile qFile(fileName);
@@ -279,7 +284,7 @@ void MainWindow::on_actionImportFromFile_triggered() {
                 qDebug() << "no function of drawCurve right now.\n";
             }
             else if(strList[0].compare(QString("translate")) == 0)
-            {    
+            {
                 qDebug() << "now at translate.\n";
                 int id = strList[1].toInt();
                 int dx = strList[2].toInt();

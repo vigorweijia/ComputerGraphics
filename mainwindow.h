@@ -132,6 +132,7 @@ private slots:
     //void on_actionSave_triggered();
     void on_actionSaveAs_triggered();
     void on_actionImportFromFile_triggered();
+    void doImportFromFile(QString fileName, QString savingDir);
     //----------------------------------------
 
     //--------------Edit栏--------------------
