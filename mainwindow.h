@@ -45,6 +45,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    //--------non-Gui interface-----------
+    void execNonGui(QString fileName, QString savingDir);
+    //------------------------------------
+
     //-----width and height of canvas-----
     int newCanvasWidth;
     int newCanvasHeight;

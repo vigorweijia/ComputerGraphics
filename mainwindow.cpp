@@ -64,6 +64,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::execNonGui(QString fileName, QString savingDir)
+{
+
+}
+
 bool MainWindow::isIdExist(int id)
 {
     for(int i = 0; i < v.size(); i++) {if(v[i].id == id) return true;}
