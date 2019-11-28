@@ -198,7 +198,10 @@ void MainWindow::doImportFromFile(QString fileName, QString savingDir)
             else if(strList[0].compare(QString("saveCanvas")) == 0)
             {
                 qDebug() << "now at saveCanvas" << strList.size() << "\n";
-                qPixmap->save(strList[1]+".bmp");
+                if(savingDir.compare(QString("")) == 0)
+                    qPixmap->save(strList[1]+".bmp");
+                else
+                    qPixmap->save(savingDir+strList[1]+".bmp");
             }
             else if(strList[0].compare(QString("setColor")) == 0)
             {
