@@ -9,12 +9,12 @@ int main(int argc, char *argv[])
         w.show();
     else
     {
-        if(argc != 2)
+        if(argc != 3)
         {
             qDebug() << "invalid input, please check your parameter";
             return 0;
         }
-        w.execNonGui(argv[1], argv[2]);
+        w.execNonGui(QString(argv[1]), QString(argv[2]));
         return 0;
     }
 
