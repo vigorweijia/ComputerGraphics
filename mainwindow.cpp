@@ -1072,7 +1072,44 @@ void MainWindow::drawCurveBspline(vector<int> v, QPainter *thisPainter)
 
 }
 
+MainWindow::Point MainWindow::getFinalPoint(double t, int n)
+{
+    if(n == 1)
+    {
+        //qDebug() << " ";
+        return workPoint[0];
+    }
+    else
+    {
+        for(int i = 0; i < n-1; i++)
+        {
+            workPoint[i].x = workPoint[i].x*(1-t) + workPoint[i+1].x*t;
+            workPoint[i].y = workPoint[i].y*(1-t) + workPoint[i+1].y*t;
+            //qDebug() << n << ",workPoint[" << i << "]: " << workPoint[i].x << " " << workPoint[i].y;
+        }
+        return getFinalPoint(t, n-1);
+    }
+}
+
 void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
 {
-
+    int n = v[0];
+    controlPoint = new Point[n];
+    workPoint = new Point[n];
+    for(int i = 0; i < n; i++)
+    {
+        controlPoint[i].x = (double)v[i*2+1];
+        controlPoint[i].y = (double)v[i*2+2];
+        //qDebug() << "controlPoint: " << controlPoint[i].x << " " << controlPoint[i].y;
+    }
+    int d = 255;
+    for(int i = 0; i <= d; i++)
+    {
+        for(int j = 0; j < n; j++) workPoint[j] = controlPoint[j];
+        double t = (double)i/d;
+        Point finalPoint = getFinalPoint(t, n);
+        thisPainter->drawPoint((int)finalPoint.x, (int)finalPoint.y);
+    }
+    delete []controlPoint;
+    delete []workPoint;
 }

@@ -19,7 +19,7 @@ void CurveDialog::on_Bspline_clicked()
     int id = ui->ID->text().toInt();
     int n = ui->number->text().toInt();
     QStringList strList = ui->points->text().split(" ");
-    if(strList.size() != n) return;
+    if(strList.size() != 2*n) return;
     vector<int> v;
     for(int i = 0; i < n; i++)
     {
@@ -36,7 +36,7 @@ void CurveDialog::on_Bezier_clicked()
     int id = ui->ID->text().toInt();
     int n = ui->number->text().toInt();
     QStringList strList = ui->points->text().split(" ");
-    if(strList.size() != n) return;
+    if(strList.size() != 2*n) return;
     vector<int> v;
     for(int i = 0; i < n; i++)
     {

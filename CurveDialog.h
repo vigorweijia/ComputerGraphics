@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <vector>
+#include <QDebug>
 using namespace std;
 
 namespace Ui {

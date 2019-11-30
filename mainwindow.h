@@ -125,6 +125,19 @@ private:
     void doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
     void doClipLiangBarsky(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
     void drawCurveBspline(vector<int> v, QPainter *thisPainter);
+    struct Point
+    {
+        double x;
+        double y;
+        void operator =(const Point& B)
+        {
+            x = B.x;
+            y = B.y;
+        }
+    };
+    Point getFinalPoint(double t, int n);
+    Point *controlPoint;
+    Point *workPoint;
     void drawCurveBezier(vector<int> v, QPainter *thisPainter);
     //--------------------------------------------
 
