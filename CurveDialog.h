@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <vector>
+using namespace std;
 
 namespace Ui {
 class CurveDialog;

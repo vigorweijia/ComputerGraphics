@@ -11,6 +11,7 @@
 #include "RotateDialog.h"
 #include "ScaleDialog.h"
 #include "ClipDialog.h"
+#include "CurveDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -64,6 +65,7 @@ public:
     RotateDialog *rotateDialog;
     ScaleDialog *scaleDialog;
     ClipDialog *clipDialog;
+    CurveDialog *curveDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -122,6 +124,8 @@ private:
     void doScale(int id, int cx, int cy, float scale, QPainter *thisPainter);
     void doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
     void doClipLiangBarsky(int id, int x1, int y1, int x2, int y2, QPainter *thisPainter);
+    void drawCurveBspline(vector<int> v, QPainter *thisPainter);
+    void drawCurveBezier(vector<int> v, QPainter *thisPainter);
     //--------------------------------------------
 
 private slots:
@@ -145,6 +149,7 @@ private slots:
     void on_actionRotate_triggered();
     void on_actionScale_triggered();
     void on_actionClip_triggered();
+    void on_actionCurve_triggered();
     //----------------------------------------
 
     //--------------Toolbar-------------------
@@ -162,6 +167,7 @@ private slots:
     void onReceive_Rotate(int id, int cx, int cy, int angle);
     void onReceive_Scale(int id, int cx, int cy, float scale);
     void onReceive_Clip(int id, int x1, int y1, int x2, int y2, int type);
+    void onReceive_DrawCurve(int id, int n, vector<int> v, int type);
     //---------------------------------------------------------------------------------
 };
 

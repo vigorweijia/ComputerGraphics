@@ -1074,5 +1074,5 @@ void MainWindow::drawCurveBspline(vector<int> v, QPainter *thisPainter)
 
 void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
 {
-
+    
 }
