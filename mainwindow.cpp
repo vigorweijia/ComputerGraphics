@@ -289,7 +289,28 @@ void MainWindow::doImportFromFile(QString fileName, QString savingDir)
             }
             else if(strList[0].compare(QString("drawCurve")) == 0)
             {
-                qDebug() << "no function of drawCurve right now.\n";
+                qDebug() << "not at curve.\n";
+                GraphicUnit g;
+                int id = strList[1].toInt();
+                g.id = id;
+                g.type = TYPE_CURVE;
+                int n = strList[2].toInt();
+                g.para.push_back(n);
+                int type = (strList[3].compare(QString("B-spline")) == 0) ? 0 : 1;
+                textLine = qTextStream.readLine();
+                strList = textLine.split(" ");
+                for(int i = 0; i < n; i++)
+                {
+                    g.para.push_back(strList[i*2].toInt());
+                    g.para.push_back(strList[i*2+1].toInt());
+                }
+                g.color.r = (char)((qColor->red())&0xff);
+                g.color.g = (char)((qColor->green())&0xff);
+                g.color.b = (char)((qColor->blue())&0xff);
+                v.push_back(g);
+                if(type == 0) drawCurveBspline(g.para, qPainter);
+                else if(type == 1) drawCurveBezier(g.para, qPainter);
+                ui->label->setPixmap(*qPixmap);
             }
             else if(strList[0].compare(QString("translate")) == 0)
             {
