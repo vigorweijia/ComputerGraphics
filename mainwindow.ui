@@ -89,10 +89,13 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionLineIcon"/>
    <addaction name="actionEllipseIcon"/>
+   <addaction name="actionPolygonIcon"/>
+   <addaction name="actionScaleIcon"/>
+   <addaction name="actionRotateIcon"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewCanvas">
@@ -195,6 +198,42 @@
    </property>
    <property name="text">
     <string>EllipseIcon</string>
+   </property>
+  </action>
+  <action name="actionPolygonIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Polygon.png</normaloff>:/myicon/imgs/Polygon.png</iconset>
+   </property>
+   <property name="text">
+    <string>PolygonIcon</string>
+   </property>
+  </action>
+  <action name="actionScaleIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Scale.png</normaloff>:/myicon/imgs/Scale.png</iconset>
+   </property>
+   <property name="text">
+    <string>ScaleIcon</string>
+   </property>
+  </action>
+  <action name="actionRotateIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Rotate.png</normaloff>:/myicon/imgs/Rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>RotateIcon</string>
    </property>
   </action>
  </widget>

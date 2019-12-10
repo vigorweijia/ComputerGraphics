@@ -12,5 +12,8 @@
         <file>imgs/save-as.png</file>
         <file>imgs/stop-sign.png</file>
         <file>imgs/txt_files.png</file>
+        <file>imgs/Polygon.png</file>
+        <file>imgs/Rotate.png</file>
+        <file>imgs/Scale.png</file>
     </qresource>
 </RCC>
