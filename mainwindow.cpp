@@ -1090,6 +1090,8 @@ void MainWindow::onReceive_DrawCurve(int id, int n, vector<int> tempV, int type)
 
 void MainWindow::drawCurveBspline(vector<int> v, QPainter *thisPainter)
 {
+    /*P(t)=1/6(-t^3+3t^2-3t+1)P0+1/6(3t^3-6t^2+4)P1+1/6(-3t^3+3t^2+3t+1)P2+1/6t^3P3*/
+     int n = v[0];
 
 }
 
