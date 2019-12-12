@@ -166,8 +166,12 @@ private slots:
     //----------------------------------------
 
     //--------------Toolbar-------------------
+    void cancelSelectedIcon();
     void on_actionLineIcon_triggered();
     void on_actionEllipseIcon_triggered();
+    void on_actionPolygonIcon_triggered();
+    void on_actionScaleIcon_triggered();
+    void on_actionRotateIcon_triggered();
     //----------------------------------------
 
     //-------------------------Signals from child dialog-------------------------------
