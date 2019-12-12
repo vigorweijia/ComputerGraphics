@@ -692,12 +692,14 @@ void MainWindow::on_actionScaleIcon_triggered()
 {
     cancelSelectedIcon();
     ui->actionScaleIcon->setChecked(true);
+    selectedDrawEvent = TYPE_SCALE;
 }
 
 void MainWindow::on_actionRotateIcon_triggered()
 {
     cancelSelectedIcon();
     ui->actionRotateIcon->setChecked(true);
+    selectedDrawEvent = TYPE_ROTATE;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
