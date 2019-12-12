@@ -172,6 +172,7 @@ private slots:
     void on_actionPolygonIcon_triggered();
     void on_actionScaleIcon_triggered();
     void on_actionRotateIcon_triggered();
+    void on_actionPointerIcon_triggered();
     //----------------------------------------
 
     //-------------------------Signals from child dialog-------------------------------

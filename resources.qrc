@@ -15,5 +15,6 @@
         <file>imgs/Polygon.png</file>
         <file>imgs/Rotate.png</file>
         <file>imgs/Scale.png</file>
+        <file>imgs/Pointer.png</file>
     </qresource>
 </RCC>

@@ -652,59 +652,52 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 
 void MainWindow::cancelSelectedIcon()
 {
+    ui->actionPointerIcon->setChecked(false);
     ui->actionLineIcon->setChecked(false);
     ui->actionEllipseIcon->setChecked(false);
     ui->actionPolygonIcon->setChecked(false);
     ui->actionScaleIcon->setChecked(false);
     ui->actionRotateIcon->setChecked(false);
+    selectedDrawEvent = TYPE_NOTHING;
+}
+
+void MainWindow::on_actionPointerIcon_triggered()
+{
+    cancelSelectedIcon();
+    selectedDrawEvent = TYPE_NOTHING;
 }
 
 void MainWindow::on_actionLineIcon_triggered()
 {
-    if(ui->actionLineIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
-    else {
-        cancelSelectedIcon();
-        ui->actionLineIcon->setChecked(true);
-        selectedDrawEvent = TYPE_LINE;
-    }
+    cancelSelectedIcon();
+    ui->actionLineIcon->setChecked(true);
+    selectedDrawEvent = TYPE_LINE;
 }
 
 void MainWindow::on_actionEllipseIcon_triggered()
 {
-    if(ui->actionEllipseIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
-    else {
-        cancelSelectedIcon();
-        ui->actionEllipseIcon->setChecked(true);
-        selectedDrawEvent = TYPE_ELLIPSE;
-    }
+    cancelSelectedIcon();
+    ui->actionEllipseIcon->setChecked(true);
+    selectedDrawEvent = TYPE_ELLIPSE;
 }
 
 void MainWindow::on_actionPolygonIcon_triggered()
 {
-    if(ui->actionPolygonIcon->isChecked() == false) selectedDrawEvent = TYPE_POLYGON;
-    else {
-        cancelSelectedIcon();
-        ui->actionPolygonIcon->setChecked(true);
-        selectedDrawEvent = TYPE_POLYGON;
-    }
+    cancelSelectedIcon();
+    ui->actionPolygonIcon->setChecked(true);
+    selectedDrawEvent = TYPE_POLYGON;
 }
 
 void MainWindow::on_actionScaleIcon_triggered()
 {
-    if(ui->actionScaleIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
-    else {
-        cancelSelectedIcon();
-        ui->actionScaleIcon->setChecked(true);
-    }
+    cancelSelectedIcon();
+    ui->actionScaleIcon->setChecked(true);
 }
 
 void MainWindow::on_actionRotateIcon_triggered()
 {
-    if(ui->actionRotateIcon->isChecked() == false) selectedDrawEvent = TYPE_NOTHING;
-    else {
-        cancelSelectedIcon();
-        ui->actionRotateIcon->setChecked(true);
-    }
+    cancelSelectedIcon();
+    ui->actionRotateIcon->setChecked(true);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
