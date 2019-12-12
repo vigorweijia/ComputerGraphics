@@ -716,6 +716,11 @@ void MainWindow::on_actionRotateIcon_triggered()
     selectedDrawEvent = TYPE_ROTATE;
 }
 
+void MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)
+{
+
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     //qDebug() << "x:" << e->x() << " y:" << e->y();
