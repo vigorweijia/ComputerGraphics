@@ -8,6 +8,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+//-------------new timer------------------------
+    qTimer = new QTimer(this);
+
+//----------------------------------------------
+
 //-------------new canvas dialog----------------
     newCanvasDialog = new NewCanvasDialog();
     connect(newCanvasDialog, SIGNAL(newCanvasDialogAcceptedEvent(int,int)), this, SLOT(onReceive_NewCanvasDialogAcceptedEvent(int,int)));
@@ -652,6 +657,14 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 
 void MainWindow::cancelSelectedIcon()
 {
+    if(selectedDrawEvent == TYPE_POLYGON && selectedX1 != -1 && selectedY1 != -1) //complete drawing
+    {
+        drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
+        tempPixmap->fill(Qt::transparent);
+        ui->tempLabel->setPixmap(*tempPixmap);
+        ui->label->setPixmap(*qPixmap);
+        selectedX1 = selectedY1 = -1; //clear to -1
+    }
     ui->actionPointerIcon->setChecked(false);
     ui->actionLineIcon->setChecked(false);
     ui->actionEllipseIcon->setChecked(false);
@@ -686,6 +699,7 @@ void MainWindow::on_actionPolygonIcon_triggered()
     cancelSelectedIcon();
     ui->actionPolygonIcon->setChecked(true);
     selectedDrawEvent = TYPE_POLYGON;
+    selectedX1 = selectedY1 = -1;
 }
 
 void MainWindow::on_actionScaleIcon_triggered()
@@ -712,10 +726,36 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     if(clickTimes == 0)
     {
         clickTimes = 1;
-        selectedX0 = relativeX;
-        selectedY0 = relativeY;
-    }
+        if(selectedDrawEvent == TYPE_POLYGON && selectedX1 != -1 && selectedY1 != -1)
+        {
+            //selectedX1 and Y1 are set to -1 when
+            //clicking the button drawPolygonIcon or finishing drawing a Polygon
+            selectedX0 = selectedX1;
+            selectedY0 = selectedY1;
+        }
+        else {
+            selectedX0 = relativeX;
+            selectedY0 = relativeY;
+            startX = selectedX0;
+            startY = selectedY0;
+        }
+     }
+}
 
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    qDebug() << "double click";
+    int relativeX = e->x() - baseX;
+    int relativeY = e->y() - baseY;
+    if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
+    if(selectedDrawEvent != TYPE_POLYGON) return;
+    selectedX1 = relativeX;
+    selectedY1 = relativeY;
+    drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
+    tempPixmap->fill(Qt::transparent);
+    ui->tempLabel->setPixmap(*tempPixmap);
+    ui->label->setPixmap(*qPixmap);
+    selectedX1 = selectedY1 = -1; //clear to -1
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
@@ -735,6 +775,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
         if(selectedDrawEvent == TYPE_ELLIPSE)
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,tempPainter);
+        if(selectedDrawEvent == TYPE_POLYGON)
+            drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -753,6 +795,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
         if(selectedDrawEvent == TYPE_ELLIPSE)
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,qPainter);
+        if(selectedDrawEvent == TYPE_POLYGON)
+            drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);

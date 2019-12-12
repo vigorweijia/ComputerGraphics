@@ -25,6 +25,7 @@
 #include <QColor>
 #include <QPen>
 #include <QMouseEvent>
+#include <QTimer>
 
 #define TYPE_NOTHING 0
 #define TYPE_LINE 1
@@ -74,6 +75,7 @@ public:
     int selectedDrawEvent;
     int clickTimes;
     int selectedX0,selectedY0,selectedX1,selectedY1;
+    int startX, startY;
     //------------------------------------
 
     //------structure of Graphic Unit-----
@@ -94,6 +96,7 @@ protected:
     //----------mouse drag event--------------
     int baseX,baseY; //用于计算相对于label(Canvas)的坐标
     void mousePressEvent(QMouseEvent *e);
+    void mouseDoubleClickEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     //----------------------------------------
@@ -110,7 +113,13 @@ private:
     QPixmap *tempPixmap;
     //--------------------------------
 
-    QColor *qColor;//color of painter
+    //------画笔颜色-------
+    QColor *qColor;
+    //--------------------
+
+    //------计时器---------
+    QTimer *qTimer;
+    //--------------------
 
     //----------各类事件的处理函数-------------------
     void createNewCanvas(int width, int height);
