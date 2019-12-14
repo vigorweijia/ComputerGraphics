@@ -716,9 +716,61 @@ void MainWindow::on_actionRotateIcon_triggered()
     selectedDrawEvent = TYPE_ROTATE;
 }
 
-void MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)
+int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)
 {
-
+    int minn = 0;
+    int newId;
+    if(type == TYPE_POLYGON)
+    {
+        if(id == 0)
+        {
+            for(int i = 0; i < v.size(); i++) if(minn < v[i].id) minn = v[i].id; //the Min ID of the Graphic Unit.
+            newId = minn - 1;
+            GraphicUnit g;
+            g.id = newId;
+            g.para.push_back(2);
+            g.para.push_back(x0);
+            g.para.push_back(y0);
+            g.para.push_back(x1);
+            g.para.push_back(y1);
+            g.color.r = (char)((qColor->red())&(0xff));
+            g.color.g = (char)((qColor->green())&(0xff));
+            g.color.b = (char)((qColor->blue())&(0xff));
+            g.type = type;
+            v.push_back(g);
+        }
+        else
+        {
+            for(int i = 0; i < v.size(); i++)
+            {
+                if(v[i].id == id)
+                {
+                    v[i].para.push_back(x0);
+                    v[i].para.push_back(y0);
+                    v[i].para[0] += 1;
+                    newId = id;
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < v.size(); i++) if(minn < v[i].id) minn = v[i].id; //the Min ID of the Graphic Unit.
+        newId = minn - 1;
+        GraphicUnit g;
+        g.id = newId;
+        g.para.push_back(x0);
+        g.para.push_back(y0);
+        g.para.push_back(x1);
+        g.para.push_back(y1);
+        g.color.r = (char)((qColor->red())&(0xff));
+        g.color.g = (char)((qColor->green())&(0xff));
+        g.color.b = (char)((qColor->blue())&(0xff));
+        g.type = type;
+        v.push_back(g);
+    }
+    return newId;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
