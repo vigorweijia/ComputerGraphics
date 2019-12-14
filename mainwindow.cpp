@@ -794,13 +794,13 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
         default:
             break;
         }
-        if(tempDis < midDis)
+        if(tempDis < minDis)
         {
             minDis = tempDis;
             newId = v[i].id;
         }
     }
-
+    return 0;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
