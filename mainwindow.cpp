@@ -773,6 +773,36 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
     return newId;
 }
 
+int MainWindow::selectGraphicUnit(int nx, int ny)
+{
+    float disLimit = 10.0f;
+    int newId = -1;
+    float minDis = 1000.0f;
+    for(int i = 0; i < v.size(); i++)
+    {
+        float tempDis = 1000.0f;
+        switch (v[i].type) {
+        case TYPE_LINE:
+            tempDis = (float)abs((v[i].para[0]-nx)*(v[i].para[3]-ny)-(v[i].para[2]-nx)*(v[i].para[1]-ny))/sqrt((v[i].para[0]-v[i].para[2])*(v[i].para[0]-v[i].para[2])+(v[i].para[1]-v[i].para[3])*(v[i].para[1]-v[i].para[3]));
+            break;
+        case TYPE_ELLIPSE:
+
+            break;
+        case TYPE_POLYGON:
+
+            break;
+        default:
+            break;
+        }
+        if(tempDis < midDis)
+        {
+            minDis = tempDis;
+            newId = v[i].id;
+        }
+    }
+
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     //qDebug() << "x:" << e->x() << " y:" << e->y();
