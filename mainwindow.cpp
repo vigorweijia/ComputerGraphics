@@ -787,6 +787,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         {
             //selectedX1 and Y1 are set to -1 when
             //clicking the button drawPolygonIcon or finishing drawing a Polygon
+            allocatedId = 0;
             selectedX0 = selectedX1;
             selectedY0 = selectedY1;
         }
@@ -848,12 +849,23 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         clickTimes = 0;
         selectedX1 = relativeX;
         selectedY1 = relativeY;
-        if(selectedDrawEvent == TYPE_LINE)
+        if(selectedDrawEvent == TYPE_LINE) /***Remember to clear allocatedId.***/
+        {
+            allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_LINE, 0);
+            allocatedId = 0;
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
+        }
         if(selectedDrawEvent == TYPE_ELLIPSE)
+        {
+            allocatedId = saveDragGraphicUnit((selectedX0+selectedY0)/2, (selectedX1+selectedY1)/2, abs(selectedX1-selectedX0)/2, abs(selectedY1-selectedY0)/2, TYPE_ELLIPSE, 0);
+            allocatedId = 0;
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,qPainter);
+        }
         if(selectedDrawEvent == TYPE_POLYGON)
+        {
+            allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_POLYGON, allocatedId);
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
+        }
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);

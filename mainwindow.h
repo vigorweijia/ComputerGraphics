@@ -76,6 +76,7 @@ public:
     int clickTimes;
     int selectedX0,selectedY0,selectedX1,selectedY1;
     int startX, startY;
+    int allocatedId;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)
     int saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id);
