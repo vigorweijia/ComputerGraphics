@@ -777,19 +777,29 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
 {
     float disLimit = 10.0f;
     int newId = -1;
+    int sz = 0;
     float minDis = 1000.0f;
     for(int i = 0; i < v.size(); i++)
     {
         float tempDis = 1000.0f;
         switch (v[i].type) {
         case TYPE_LINE:
-            tempDis = (float)abs((v[i].para[0]-nx)*(v[i].para[3]-ny)-(v[i].para[2]-nx)*(v[i].para[1]-ny))/sqrt((v[i].para[0]-v[i].para[2])*(v[i].para[0]-v[i].para[2])+(v[i].para[1]-v[i].para[3])*(v[i].para[1]-v[i].para[3]));
+            tempDis = abs((v[i].para[2]-v[i].para[0])*ny-(v[i].para[3]-v[i].para[1])*nx+(v[i].para[3]-v[i].para[1])*v[i].para[0]+(v[i].para[2]-v[i].para[0])*v[i].para[1]);
             break;
         case TYPE_ELLIPSE:
-
+            tempDis = abs(v[i].para[3]*v[i].para[3]*(nx-v[i].para[0])*(nx-v[i].para[0])+v[i].para[2]*v[i].para[2]*(ny-v[i].para[1])*(ny-v[i].para[1])-v[i].para[2]*v[i].para[2]*v[i].para[3]*v[i].para[3]);
             break;
         case TYPE_POLYGON:
-
+            sz = v[i].para[0];
+            for(int j = 0; j < sz; j++)
+            {
+                int x0 = v[i].para[(j*2)%sz+1];
+                int y0 = v[i].para[(j*2+1)%sz+1];
+                int x1 = v[i].para[(j*2+2)%sz+2];
+                int y1 = v[i].para[(j*2+3)%sz+1];
+                tempDis = abs((x1-x0)*ny-(y1-y0)*nx+(y1-y0)*x0+(x1-x0)*y0);
+                if(tempDis < minDis) tempDis = minDis;
+            }
             break;
         default:
             break;
@@ -800,7 +810,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             newId = v[i].id;
         }
     }
-    return 0;
+    return newId;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
