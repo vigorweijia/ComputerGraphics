@@ -724,7 +724,7 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
     {
         if(id == 0)
         {
-            for(int i = 0; i < v.size(); i++) if(minn < v[i].id) minn = v[i].id; //the Min ID of the Graphic Unit.
+            for(int i = 0; i < v.size(); i++) if(v[i].id < minn) minn = v[i].id; //the Min ID of the Graphic Unit.
             newId = minn - 1;
             GraphicUnit g;
             g.id = newId;
@@ -756,7 +756,7 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
     }
     else
     {
-        for(int i = 0; i < v.size(); i++) if(minn < v[i].id) minn = v[i].id; //the Min ID of the Graphic Unit.
+        for(int i = 0; i < v.size(); i++) if(v[i].id < minn) minn = v[i].id; //the Min ID of the Graphic Unit.
         newId = minn - 1;
         GraphicUnit g;
         g.id = newId;
@@ -784,10 +784,19 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
         float tempDis = 1000.0f;
         switch (v[i].type) {
         case TYPE_LINE:
-            tempDis = abs((v[i].para[2]-v[i].para[0])*ny-(v[i].para[3]-v[i].para[1])*nx+(v[i].para[3]-v[i].para[1])*v[i].para[0]+(v[i].para[2]-v[i].para[0])*v[i].para[1]);
+            qDebug() << "x0:" << v[i].para[0];
+            qDebug() << "y0:" << v[i].para[1];
+            qDebug() << "x1:" << v[i].para[2];
+            qDebug() << "y1:" << v[i].para[3];
+            qDebug() << "nx:" << nx;
+            qDebug() << "ny:" << ny;
+            int x0 = v[i].para[0], y0 = v[i].para[1], x1 = v[i].para[2], y1 = v[i].para[3];
+            tempDis = abs(((x1-x0)*(ny-y0)-(y1-y0)*(nx-x0))/sqrt((x1-x0)*(x1-x0)));
+            qDebug() << "tempDis Line: " << tempDis;
             break;
         case TYPE_ELLIPSE:
-            tempDis = abs(v[i].para[3]*v[i].para[3]*(nx-v[i].para[0])*(nx-v[i].para[0])+v[i].para[2]*v[i].para[2]*(ny-v[i].para[1])*(ny-v[i].para[1])-v[i].para[2]*v[i].para[2]*v[i].para[3]*v[i].para[3]);
+            tempDis = sqrt(abs(v[i].para[3]*v[i].para[3]*(nx-v[i].para[0])*(nx-v[i].para[0])+v[i].para[2]*v[i].para[2]*(ny-v[i].para[1])*(ny-v[i].para[1])-v[i].para[2]*v[i].para[2]*v[i].para[3]*v[i].para[3]));
+            qDebug() << "tempDis Ellipse: " << tempDis;
             break;
         case TYPE_POLYGON:
             sz = v[i].para[0];
@@ -795,10 +804,14 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             {
                 int x0 = v[i].para[(j*2)%sz+1];
                 int y0 = v[i].para[(j*2+1)%sz+1];
-                int x1 = v[i].para[(j*2+2)%sz+2];
+                int x1 = v[i].para[(j*2+2)%sz+1];
                 int y1 = v[i].para[(j*2+3)%sz+1];
                 tempDis = abs((x1-x0)*ny-(y1-y0)*nx+(y1-y0)*x0+(x1-x0)*y0);
-                if(tempDis < minDis) tempDis = minDis;
+                if(tempDis < minDis) {
+                    minDis = tempDis;
+                    newId = v[i].id;
+                    selectedIndex = i;
+                }
             }
             break;
         default:
@@ -808,17 +821,28 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
         {
             minDis = tempDis;
             newId = v[i].id;
+            selectedIndex = i;
         }
     }
-    return newId;
+    if(minDis < 100) return newId;
+    else return 0;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
+    qDebug() << "selectedID: " << selectedId;
     //qDebug() << "x:" << e->x() << " y:" << e->y();
     int relativeX = e->x() - baseX;
     int relativeY = e->y() - baseY;
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
+    if(e->button() == Qt::RightButton)
+    {
+        centralX = relativeX;
+        centralY = relativeY;
+        return;
+    }
+    else
+        centralX = centralY = -1;
     if(selectedDrawEvent == TYPE_NOTHING) return;
     if(clickTimes == 0)
     {
@@ -837,6 +861,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             startX = selectedX0;
             startY = selectedY0;
         }
+        selectedId = selectGraphicUnit(relativeX, relativeY);
      }
 }
 
@@ -875,6 +900,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,tempPainter);
         if(selectedDrawEvent == TYPE_POLYGON)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
+        if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
+        {
+            if(v[selectedIndex].type == TYPE_ELLIPSE)
+                doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))), tempPainter);
+        }
+        //center
+        if(centralX != -1 && centralY != -1) tempPainter->drawPoint(centralX, centralY);
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -905,6 +937,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         {
             allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_POLYGON, allocatedId);
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
+        }
+        if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
+        {
+            if(v[selectedIndex].type == TYPE_ELLIPSE)
+                doScale(selectedId, v[selectedIndex].para[0], v[selectedIndex].para[1], (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))),qPainter);
         }
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
