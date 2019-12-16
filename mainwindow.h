@@ -79,6 +79,7 @@ public:
     int allocatedId;
     int selectedId;
     int selectedIndex;
+    int centralX, centralY;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)
     int saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id);

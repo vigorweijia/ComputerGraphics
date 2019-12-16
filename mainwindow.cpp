@@ -775,28 +775,28 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
 
 int MainWindow::selectGraphicUnit(int nx, int ny)
 {
+    selectedId = 0;
     float disLimit = 10.0f;
     int newId = -1;
     int sz = 0;
     float minDis = 1000.0f;
+    int x0, y0, x1, y1;
+    int cx,cy,rx,ry,delta,tempDis1,tempDis2;
     for(int i = 0; i < v.size(); i++)
     {
         float tempDis = 1000.0f;
         switch (v[i].type) {
         case TYPE_LINE:
-            qDebug() << "x0:" << v[i].para[0];
-            qDebug() << "y0:" << v[i].para[1];
-            qDebug() << "x1:" << v[i].para[2];
-            qDebug() << "y1:" << v[i].para[3];
-            qDebug() << "nx:" << nx;
-            qDebug() << "ny:" << ny;
-            int x0 = v[i].para[0], y0 = v[i].para[1], x1 = v[i].para[2], y1 = v[i].para[3];
-            tempDis = abs(((x1-x0)*(ny-y0)-(y1-y0)*(nx-x0))/sqrt((x1-x0)*(x1-x0)));
-            qDebug() << "tempDis Line: " << tempDis;
+            x0 = v[i].para[0], y0 = v[i].para[1], x1 = v[i].para[2], y1 = v[i].para[3];
+            tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
             break;
         case TYPE_ELLIPSE:
-            tempDis = sqrt(abs(v[i].para[3]*v[i].para[3]*(nx-v[i].para[0])*(nx-v[i].para[0])+v[i].para[2]*v[i].para[2]*(ny-v[i].para[1])*(ny-v[i].para[1])-v[i].para[2]*v[i].para[2]*v[i].para[3]*v[i].para[3]));
-            qDebug() << "tempDis Ellipse: " << tempDis;
+            cx = v[i].para[0], cy = v[i].para[1], rx = v[i].para[2], ry = v[i].para[3];
+            delta = sqrt(ry*ry*(nx-cx)*(nx-cx)+rx*rx*(ny-cy)*(ny-cy));
+            tempDis1 = sqrt((nx-cx-rx*ry*(nx-cx)/delta)*(nx-cx-rx*ry*(nx-cx)/delta)+(ny-cy-rx*ry*(ny-cy)/delta)*(ny-cy-rx*ry*(ny-cy)/delta));
+            tempDis2 = sqrt((nx-cx+rx*ry*(nx-cx)/delta)*(nx-cx+rx*ry*(nx-cx)/delta)+(ny-cy+rx*ry*(ny-cy)/delta)*(ny-cy+rx*ry*(ny-cy)/delta));
+            qDebug() << "v[i].id:" << v[i].id << " tempDis1:" << tempDis1 << " tempDis2:" << tempDis2;
+            tempDis = min(tempDis1, tempDis2);
             break;
         case TYPE_POLYGON:
             sz = v[i].para[0];
@@ -806,7 +806,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
                 int y0 = v[i].para[(j*2+1)%sz+1];
                 int x1 = v[i].para[(j*2+2)%sz+1];
                 int y1 = v[i].para[(j*2+3)%sz+1];
-                tempDis = abs((x1-x0)*ny-(y1-y0)*nx+(y1-y0)*x0+(x1-x0)*y0);
+                tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
                 if(tempDis < minDis) {
                     minDis = tempDis;
                     newId = v[i].id;
@@ -824,14 +824,13 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             selectedIndex = i;
         }
     }
-    if(minDis < 100) return newId;
+    qDebug() << "minDis: " << minDis << ", selectedId: " << newId;
+    if(minDis < disLimit) return newId;
     else return 0;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
-    qDebug() << "selectedID: " << selectedId;
-    //qDebug() << "x:" << e->x() << " y:" << e->y();
     int relativeX = e->x() - baseX;
     int relativeY = e->y() - baseY;
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
@@ -902,8 +901,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            if(v[selectedIndex].type == TYPE_ELLIPSE)
-                doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))), tempPainter);
+            //if(v[selectedIndex].type == TYPE_ELLIPSE)
+              //  doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))), tempPainter);
         }
         //center
         if(centralX != -1 && centralY != -1) tempPainter->drawPoint(centralX, centralY);
@@ -929,7 +928,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         }
         if(selectedDrawEvent == TYPE_ELLIPSE)
         {
-            allocatedId = saveDragGraphicUnit((selectedX0+selectedY0)/2, (selectedX1+selectedY1)/2, abs(selectedX1-selectedX0)/2, abs(selectedY1-selectedY0)/2, TYPE_ELLIPSE, 0);
+            allocatedId = saveDragGraphicUnit((selectedX0+selectedX1)/2, (selectedY0+selectedY1)/2, abs(selectedX1-selectedX0)/2, abs(selectedY1-selectedY0)/2, TYPE_ELLIPSE, 0);
             allocatedId = 0;
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,qPainter);
         }
@@ -940,8 +939,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            if(v[selectedIndex].type == TYPE_ELLIPSE)
-                doScale(selectedId, v[selectedIndex].para[0], v[selectedIndex].para[1], (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))),qPainter);
+            //if(v[selectedIndex].type == TYPE_ELLIPSE)
+              //  doScale(selectedId, v[selectedIndex].para[0], v[selectedIndex].para[1], (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))),qPainter);
         }
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
