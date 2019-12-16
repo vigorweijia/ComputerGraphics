@@ -917,8 +917,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            //if(v[selectedIndex].type == TYPE_ELLIPSE)
-              //  doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))), tempPainter);
+            if(v[selectedIndex].type == TYPE_ELLIPSE)
+               doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),tempPainter);
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
@@ -954,8 +954,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            //if(v[selectedIndex].type == TYPE_ELLIPSE)
-              //  doScale(selectedId, v[selectedIndex].para[0], v[selectedIndex].para[1], (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))),qPainter);
+            if(v[selectedIndex].type == TYPE_ELLIPSE)
+               doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),qPainter);
         }
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
@@ -1005,6 +1005,12 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
         drawPolygon(v[index].para, 1, thisPainter);
         break;
     case TYPE_CURVE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            v[index].para[i*2 + 1] += x;
+            v[index].para[i*2 + 2] += y;
+        }
+        drawCurveBezier(v[index].para, thisPainter);
         break;
     default:
         break;
@@ -1071,6 +1077,13 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
         drawPolygon(v[index].para, 1, thisPainter);
         break;
     case TYPE_CURVE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+        }
+        drawCurveBezier(v[index].para, thisPainter);
         break;
     default:
         break;
@@ -1099,45 +1112,57 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
         return;
     }
 
+    qDebug() << "cx:" << cx << " cy:" << cy << " scale:" << scale;
+
     createTempPixmapExceptId(id);
     int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
-    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, thisPainter);
 
+    int originX = -1, originY = -1;
     switch (v[index].type) {
     case TYPE_LINE:
         for(int i = 0; i < 2; i++)
         {
-            int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
+            originX = v[index].para[i*2], originY = v[index].para[i*2+1];
             v[index].para[i*2] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
             v[index].para[i*2+1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
         }
         drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_ELLIPSE:
-        for(int i = 0; i < 2; i++)
-        {
-            int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
-            v[index].para[i*2] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-            v[index].para[i*2+1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
-        }
+        originX = v[index].para[0], originY = v[index].para[1];
+        v[index].para[0] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+        v[index].para[1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        v[index].para[2] = (int)(float)v[index].para[2]*scale;
+        v[index].para[3] = (int)(float)v[index].para[3]*scale;
         drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
         for(int i = 0; i < v[index].para[0]; i++)
         {
-            int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
             v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
             v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
         }
         drawPolygon(v[index].para, 1, thisPainter);
         break;
     case TYPE_CURVE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        }
+        drawCurveBezier(v[index].para, thisPainter);
         break;
     default:
         break;
     }
-    ui->label->setPixmap(*qPixmap);
-    setColor(tempR, tempG, tempB, qPainter);
+    if(thisPainter == qPainter)
+        ui->label->setPixmap(*qPixmap);
+    else
+        ui->tempLabel->setPixmap(*tempPixmap);
+    setColor(tempR, tempG, tempB, thisPainter);
 }
 
 void MainWindow::on_actionClip_triggered()
