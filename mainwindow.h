@@ -82,6 +82,7 @@ public:
     int centralX, centralY;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)
+    void drawCenter(QPainter *thisPainter);
     int saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id);
     int selectGraphicUnit(int nx, int ny); //return 0 if none
     //------------------------------------

@@ -829,6 +829,16 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
     else return 0;
 }
 
+void MainWindow::drawCenter(QPainter *thisPainter)
+{
+    QColor tempColor(255,0,0);
+    thisPainter->setPen(tempColor);
+    for(int i = -2; i <= 2; i++)
+        for(int j = -2; j <= 2; j++)
+            thisPainter->drawPoint(centralX+i,centralY+j);
+    thisPainter->setPen(*qColor);
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     int relativeX = e->x() - baseX;
@@ -836,12 +846,18 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
     if(e->button() == Qt::RightButton)
     {
-        centralX = relativeX;
-        centralY = relativeY;
+        if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE)
+        {
+            centralX = relativeX;
+            centralY = relativeY;
+            tempPixmap->fill(Qt::transparent);
+            ui->tempLabel->setPixmap(*tempPixmap);
+            drawCenter(tempPainter);
+            ui->tempLabel->setPixmap(*tempPixmap);
+        }
+        else centralX = centralY = -1;
         return;
     }
-    else
-        centralX = centralY = -1;
     if(selectedDrawEvent == TYPE_NOTHING) return;
     if(clickTimes == 0)
     {
@@ -904,8 +920,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             //if(v[selectedIndex].type == TYPE_ELLIPSE)
               //  doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-v[selectedIndex].para[0])*(selectedX1-v[selectedIndex].para[0])+(selectedY1-v[selectedIndex].para[1])*(selectedY1-v[selectedIndex].para[1]))/((selectedX0-v[selectedIndex].para[0])*(selectedX0-v[selectedIndex].para[0])+(selectedY0-v[selectedIndex].para[1])*(selectedY0-v[selectedIndex].para[1]))), tempPainter);
         }
-        //center
-        if(centralX != -1 && centralY != -1) tempPainter->drawPoint(centralX, centralY);
+        if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
