@@ -31,9 +31,10 @@
 #define TYPE_LINE 1
 #define TYPE_POLYGON 2
 #define TYPE_ELLIPSE 3
-#define TYPE_CURVE 4
-#define TYPE_SCALE 5
-#define TYPE_ROTATE 6
+#define TYPE_CURVE_BSPLINE 4
+#define TYPE_CURVE_BEZIER 5
+#define TYPE_SCALE 6
+#define TYPE_ROTATE 7
 
 using namespace std;
 

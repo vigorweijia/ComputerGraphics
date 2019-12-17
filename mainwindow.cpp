@@ -97,7 +97,8 @@ void MainWindow::createTempPixmapExceptId(int id)
         case TYPE_LINE: drawLineBresenham((float)v[i].para[0],(float)v[i].para[1],(float)v[i].para[2],(float)v[i].para[3],qPainter); break;
         case TYPE_ELLIPSE: drawEllipse(v[i].para[0],v[i].para[1],v[i].para[2],v[i].para[3],qPainter); break;
         case TYPE_POLYGON: drawPolygon(v[i].para, 1, qPainter); break;
-        case TYPE_CURVE: break;
+        case TYPE_CURVE_BEZIER: drawCurveBezier(v[i].para, qPainter); break;
+        case TYPE_CURVE_BSPLINE: drawCurveBspline(v[i].para, qPainter); break;
         default: break;
         }
         setColor(tempR, tempG, tempB, qPainter);
@@ -298,10 +299,11 @@ void MainWindow::doImportFromFile(QString fileName, QString savingDir)
                 GraphicUnit g;
                 int id = strList[1].toInt();
                 g.id = id;
-                g.type = TYPE_CURVE;
-                int n = strList[2].toInt();
-                g.para.push_back(n);
                 int type = (strList[3].compare(QString("B-spline")) == 0) ? 0 : 1;
+                if(type == 0) g.type = TYPE_CURVE_BSPLINE;
+                else g.type = TYPE_CURVE_BEZIER;
+                int n = strList[2].toInt();
+                g.para.push_back(n);   
                 textLine = qTextStream.readLine();
                 strList = textLine.split(" ");
                 for(int i = 0; i < n; i++)
@@ -1004,13 +1006,21 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
         }
         drawPolygon(v[index].para, 1, thisPainter);
         break;
-    case TYPE_CURVE:
+    case TYPE_CURVE_BEZIER:
         for(int i = 0; i < v[index].para[0]; i++)
         {
             v[index].para[i*2 + 1] += x;
             v[index].para[i*2 + 2] += y;
         }
         drawCurveBezier(v[index].para, thisPainter);
+        break;
+    case TYPE_CURVE_BSPLINE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            v[index].para[i*2 + 1] += x;
+            v[index].para[i*2 + 2] += y;
+        }
+        drawCurveBspline(v[index].para, thisPainter);
         break;
     default:
         break;
@@ -1076,7 +1086,7 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
         }
         drawPolygon(v[index].para, 1, thisPainter);
         break;
-    case TYPE_CURVE:
+    case TYPE_CURVE_BEZIER:
         for(int i = 0; i < v[index].para[0]; i++)
         {
             int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
@@ -1084,6 +1094,15 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
             v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
         }
         drawCurveBezier(v[index].para, thisPainter);
+        break;
+    case TYPE_CURVE_BSPLINE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+        }
+        drawCurveBspline(v[index].para, thisPainter);
         break;
     default:
         break;
@@ -1146,7 +1165,7 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
         }
         drawPolygon(v[index].para, 1, thisPainter);
         break;
-    case TYPE_CURVE:
+    case TYPE_CURVE_BEZIER:
         for(int i = 0; i < v[index].para[0]; i++)
         {
             originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
@@ -1154,6 +1173,15 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
             v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
         }
         drawCurveBezier(v[index].para, thisPainter);
+        break;
+    case TYPE_CURVE_BSPLINE:
+        for(int i = 0; i < v[index].para[0]; i++)
+        {
+            originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
+            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        }
+        drawCurveBspline(v[index].para, thisPainter);
         break;
     default:
         break;
@@ -1339,19 +1367,14 @@ void MainWindow::onReceive_DrawCurve(int id, int n, vector<int> tempV, int type)
     g.id = id;
     g.para.push_back(n);
     for(int i = 0; i < tempV.size(); i++) g.para.push_back(tempV[i]);
-    g.type = TYPE_CURVE;
+    if(type == 0) g.type = TYPE_CURVE_BSPLINE;
+    else g.type = TYPE_CURVE_BEZIER;
     g.color.r = (char)((qColor->red())&0xff);
     g.color.g = (char)((qColor->green())&0xff);
     g.color.b = (char)((qColor->blue())&0xff);
     v.push_back(g);
-    if(type == 0)
-    {
-        drawCurveBspline(g.para, qPainter);
-    }
-    else if(type == 1)
-    {
-        drawCurveBezier(g.para, qPainter);
-    }
+    if(type == 0) drawCurveBspline(g.para, qPainter);
+    else if(type == 1) drawCurveBezier(g.para, qPainter);
     ui->label->setPixmap(*qPixmap);
 }
 
