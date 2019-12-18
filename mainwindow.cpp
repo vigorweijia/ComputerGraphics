@@ -671,6 +671,7 @@ void MainWindow::cancelSelectedIcon()
     ui->actionLineIcon->setChecked(false);
     ui->actionEllipseIcon->setChecked(false);
     ui->actionPolygonIcon->setChecked(false);
+    ui->actionCurveIcon->setChecked(false);
     ui->actionScaleIcon->setChecked(false);
     ui->actionRotateIcon->setChecked(false);
     selectedDrawEvent = TYPE_NOTHING;
@@ -702,6 +703,13 @@ void MainWindow::on_actionPolygonIcon_triggered()
     ui->actionPolygonIcon->setChecked(true);
     selectedDrawEvent = TYPE_POLYGON;
     selectedX1 = selectedY1 = -1;
+}
+
+void MainWindow::on_actionCurveIcon_triggered()
+{
+    cancelSelectedIcon();
+    ui->actionCurveIcon->setChecked(true);
+    selectedDrawEvent = TYPE_CURVE_BEZIER;
 }
 
 void MainWindow::on_actionScaleIcon_triggered()
@@ -917,6 +925,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,tempPainter);
         if(selectedDrawEvent == TYPE_POLYGON)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
+        //if(selectedDrawEvent == TYPE_CURVE_BEZIER)
+        //    drawCurveBezier();
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
             if(v[selectedIndex].type == TYPE_ELLIPSE)

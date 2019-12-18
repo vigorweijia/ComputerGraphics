@@ -95,6 +95,7 @@
    <addaction name="actionLineIcon"/>
    <addaction name="actionEllipseIcon"/>
    <addaction name="actionPolygonIcon"/>
+   <addaction name="actionCurveIcon"/>
    <addaction name="actionScaleIcon"/>
    <addaction name="actionRotateIcon"/>
   </widget>
@@ -247,6 +248,18 @@
    </property>
    <property name="text">
     <string>PointerIcon</string>
+   </property>
+  </action>
+  <action name="actionCurveIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Curve.png</normaloff>:/myicon/imgs/Curve.png</iconset>
+   </property>
+   <property name="text">
+    <string>CurveIcon</string>
    </property>
   </action>
  </widget>
