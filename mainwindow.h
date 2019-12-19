@@ -77,9 +77,8 @@ public:
     int clickTimes;
     int selectedX0,selectedY0,selectedX1,selectedY1;
     int startX, startY;
-    int allocatedId;
-    int selectedId;
-    int selectedIndex;
+    int allocatedId, allocatedIndex;
+    int selectedId, selectedIndex;
     int centralX, centralY;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)

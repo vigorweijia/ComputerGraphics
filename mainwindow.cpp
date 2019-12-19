@@ -659,9 +659,12 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 
 void MainWindow::cancelSelectedIcon()
 {
-    if(selectedDrawEvent == TYPE_POLYGON && selectedX1 != -1 && selectedY1 != -1) //complete drawing
+    if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)&& selectedX1 != -1 && selectedY1 != -1) //complete drawing
     {
-        drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
+        if(selectedDrawEvent == TYPE_POLYGON)
+            drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
+        if(selectedDrawEvent == TYPE_CURVE_BEZIER)
+            drawCurveBezier(v[allocatedIndex].para, qPainter);
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);
@@ -710,6 +713,7 @@ void MainWindow::on_actionCurveIcon_triggered()
     cancelSelectedIcon();
     ui->actionCurveIcon->setChecked(true);
     selectedDrawEvent = TYPE_CURVE_BEZIER;
+    selectedX1 = selectedY1 = -1;
 }
 
 void MainWindow::on_actionScaleIcon_triggered()
@@ -730,11 +734,12 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
 {
     int minn = 0;
     int newId;
-    if(type == TYPE_POLYGON)
+    if(type == TYPE_POLYGON || type == TYPE_CURVE_BEZIER)
     {
         if(id == 0)
         {
-            for(int i = 0; i < v.size(); i++) if(v[i].id < minn) minn = v[i].id; //the Min ID of the Graphic Unit.
+            int i;
+            for(i = 0; i < v.size(); i++) if(v[i].id < minn) minn = v[i].id; //the Min ID of the Graphic Unit.
             newId = minn - 1;
             GraphicUnit g;
             g.id = newId;
@@ -748,6 +753,7 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
             g.color.b = (char)((qColor->blue())&(0xff));
             g.type = type;
             v.push_back(g);
+            allocatedIndex = v.size()-1;
         }
         else
         {
@@ -755,8 +761,8 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
             {
                 if(v[i].id == id)
                 {
-                    v[i].para.push_back(x0);
-                    v[i].para.push_back(y0);
+                    v[i].para.push_back(x1);
+                    v[i].para.push_back(y1);
                     v[i].para[0] += 1;
                     newId = id;
                     break;
@@ -805,7 +811,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             delta = sqrt(ry*ry*(nx-cx)*(nx-cx)+rx*rx*(ny-cy)*(ny-cy));
             tempDis1 = sqrt((nx-cx-rx*ry*(nx-cx)/delta)*(nx-cx-rx*ry*(nx-cx)/delta)+(ny-cy-rx*ry*(ny-cy)/delta)*(ny-cy-rx*ry*(ny-cy)/delta));
             tempDis2 = sqrt((nx-cx+rx*ry*(nx-cx)/delta)*(nx-cx+rx*ry*(nx-cx)/delta)+(ny-cy+rx*ry*(ny-cy)/delta)*(ny-cy+rx*ry*(ny-cy)/delta));
-            qDebug() << "v[i].id:" << v[i].id << " tempDis1:" << tempDis1 << " tempDis2:" << tempDis2;
+            //qDebug() << "v[i].id:" << v[i].id << " tempDis1:" << tempDis1 << " tempDis2:" << tempDis2;
             tempDis = min(tempDis1, tempDis2);
             break;
         case TYPE_POLYGON:
@@ -834,7 +840,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             selectedIndex = i;
         }
     }
-    qDebug() << "minDis: " << minDis << ", selectedId: " << newId;
+    //qDebug() << "minDis: " << minDis << ", selectedId: " << newId;
     if(minDis < disLimit) return newId;
     else return 0;
 }
@@ -872,11 +878,10 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     if(clickTimes == 0)
     {
         clickTimes = 1;
-        if(selectedDrawEvent == TYPE_POLYGON && selectedX1 != -1 && selectedY1 != -1)
+        if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)&& selectedX1 != -1 && selectedY1 != -1)
         {
             //selectedX1 and Y1 are set to -1 when
             //clicking the button drawPolygonIcon or finishing drawing a Polygon
-            allocatedId = 0;
             selectedX0 = selectedX1;
             selectedY0 = selectedY1;
         }
@@ -885,6 +890,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             selectedY0 = relativeY;
             startX = selectedX0;
             startY = selectedY0;
+            allocatedId = 0;
         }
         selectedId = selectGraphicUnit(relativeX, relativeY);
      }
@@ -896,14 +902,19 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *e)
     int relativeX = e->x() - baseX;
     int relativeY = e->y() - baseY;
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
-    if(selectedDrawEvent != TYPE_POLYGON) return;
-    selectedX1 = relativeX;
-    selectedY1 = relativeY;
-    drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
-    tempPixmap->fill(Qt::transparent);
-    ui->tempLabel->setPixmap(*tempPixmap);
-    ui->label->setPixmap(*qPixmap);
-    selectedX1 = selectedY1 = -1; //clear to -1
+    if(selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)
+    {
+        selectedX1 = relativeX;
+        selectedY1 = relativeY;
+        if(selectedDrawEvent == TYPE_POLYGON)
+            drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
+        if(selectedDrawEvent == TYPE_CURVE_BEZIER)
+            drawCurveBezier(v[allocatedIndex].para, qPainter);
+        tempPixmap->fill(Qt::transparent);
+        ui->tempLabel->setPixmap(*tempPixmap);
+        ui->label->setPixmap(*qPixmap);
+        selectedX1 = selectedY1 = -1; //clear to -1
+    }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
@@ -944,6 +955,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
     if(clickTimes == 1)
     {
+        tempPixmap->fill(Qt::transparent);
+        ui->tempLabel->setPixmap(*tempPixmap);
+
         clickTimes = 0;
         selectedX1 = relativeX;
         selectedY1 = relativeY;
@@ -964,13 +978,18 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
             allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_POLYGON, allocatedId);
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, qPainter);
         }
+        if(selectedDrawEvent == TYPE_CURVE_BEZIER)
+        {
+            allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_CURVE_BEZIER, allocatedId);
+            drawCurveBezier(v[allocatedIndex].para, tempPainter);
+            ui->tempLabel->setPixmap(*tempPixmap);
+        }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
             if(v[selectedIndex].type == TYPE_ELLIPSE)
                doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),qPainter);
         }
-        tempPixmap->fill(Qt::transparent);
-        ui->tempLabel->setPixmap(*tempPixmap);
+
         ui->label->setPixmap(*qPixmap);
     }
 }
@@ -1443,7 +1462,6 @@ void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
     {
         controlPoint[i].x = (double)v[i*2+1];
         controlPoint[i].y = (double)v[i*2+2];
-        //qDebug() << "controlPoint: " << controlPoint[i].x << " " << controlPoint[i].y;
     }
     int d = 255;
     for(int i = 0; i <= d; i++)
