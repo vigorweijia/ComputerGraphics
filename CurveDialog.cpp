@@ -26,7 +26,7 @@ void CurveDialog::on_Bspline_clicked()
         v.push_back(strList[i*2].toInt());
         v.push_back(strList[i*2+1].toInt());
     }
-    emit drawCurveEvent(id, n, v, 1);
+    emit drawCurveEvent(id, n, v, 0);
     this->close();
 }
 

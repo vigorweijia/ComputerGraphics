@@ -1413,23 +1413,24 @@ void MainWindow::drawCurveBspline(vector<int> vec, QPainter *thisPainter)
      * P(t)=1/6(-t^3+3t^2-3t+1)P0+1/6(3t^3-6t^2+4)P1+1/6(-3t^3+3t^2+3t+1)P2+1/6t^3P3
      * =(-1/6P0+1/2P1-1/2P2+1/6P3)t^3+(1/2P0-P1+1/2P2)t^2+(-1/2P0+1/2P2)t+(1/6P0+2/3P1+1/6P2)
     *****/
-     int n = vec[0];
-    for(int i = 1; i <= n-3; i++)
+    int n = vec[0];
+    for(int i = 0; i < n-3; i++)
     {
-        int x0 = vec[i*2-1], y0 = vec[i*2];
-        int x1 = vec[i*2+1], y1 = vec[i*2+2];
-        int x2 = vec[i*2+3], y2 = vec[i*2+4];
-        int x3 = vec[i*2+5], y3 = vec[i*2+6];
+        int x0 = vec[i*2+1], y0 = vec[i*2+2];
+        int x1 = vec[i*2+3], y1 = vec[i*2+4];
+        int x2 = vec[i*2+5], y2 = vec[i*2+6];
+        int x3 = vec[i*2+7], y3 = vec[i*2+8];
+        qDebug() << "controlPoint: " << x0 << "," << y0 << " " << x1 << "," << y1 << " " << x2 << "," << y2 << " " << x3 << "," << y3;
         double a3 = (double)-x0/6+x1/2-x2/2+x3/6, b3 = (double)-y0/6+y1/2-y2/2+y3/6;
         double a2 = (double)x0/2-x1+x2/2, b2 = (double)y0/2-y1+y2/2;
         double a1 = (double)-x0/2+x2/2, b1 = (double)-y0/2+y2/2;
         double a0 = (double)x0/6+2*x1/3+x2/6, b0 = (double)y0/6+2*y1/3+y2/6;
-        for(int j = 0; j <= 50; j++)
+        for(int j = 0; j <= 100; j++)
         {
-            double t = (double)j/50;
+            double t = (double)j/100;
             double xj = a3*t*t*t+a2*t*t+a1*t+a0;
             double yj = b3*t*t*t+b2*t*t+b1*t+b0;
-            thisPainter->drawPoint((int)xj,(int)xj);
+            thisPainter->drawPoint((int)xj,(int)yj);
         }
     }
 }
