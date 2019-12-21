@@ -675,8 +675,10 @@ void MainWindow::cancelSelectedIcon()
     ui->actionEllipseIcon->setChecked(false);
     ui->actionPolygonIcon->setChecked(false);
     ui->actionCurveIcon->setChecked(false);
+    ui->actionTranslateIcon->setChecked(false);
     ui->actionScaleIcon->setChecked(false);
     ui->actionRotateIcon->setChecked(false);
+    ui->actionClipIcon->setChecked(false);
     selectedDrawEvent = TYPE_NOTHING;
 }
 
@@ -716,6 +718,12 @@ void MainWindow::on_actionCurveIcon_triggered()
     selectedX1 = selectedY1 = -1;
 }
 
+void MainWindow::on_actionTranslateIcon_triggered()
+{
+    cancelSelectedIcon();
+    ui->actionTranslateIcon->setChecked(true);
+}
+
 void MainWindow::on_actionScaleIcon_triggered()
 {
     cancelSelectedIcon();
@@ -728,6 +736,12 @@ void MainWindow::on_actionRotateIcon_triggered()
     cancelSelectedIcon();
     ui->actionRotateIcon->setChecked(true);
     selectedDrawEvent = TYPE_ROTATE;
+}
+
+void MainWindow::on_actionClipIcon_triggered()
+{
+    cancelSelectedIcon();
+    ui->actionClipIcon->setChecked(true);
 }
 
 int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)

@@ -35,6 +35,8 @@
 #define TYPE_CURVE_BEZIER 5
 #define TYPE_SCALE 6
 #define TYPE_ROTATE 7
+#define TYPE_CLIP 8
+#define TYPE_TRANSLATE 9
 
 using namespace std;
 
@@ -192,8 +194,10 @@ private slots:
     void on_actionPolygonIcon_triggered();
     void on_actionCurveIcon_triggered();
     void on_actionScaleIcon_triggered();
+    void on_actionTranslateIcon_triggered();
     void on_actionRotateIcon_triggered();
     void on_actionPointerIcon_triggered();
+    void on_actionClipIcon_triggered();
     //----------------------------------------
 
     //-------------------------Signals from child dialog-------------------------------
