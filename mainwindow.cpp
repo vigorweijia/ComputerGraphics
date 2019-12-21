@@ -722,6 +722,7 @@ void MainWindow::on_actionTranslateIcon_triggered()
 {
     cancelSelectedIcon();
     ui->actionTranslateIcon->setChecked(true);
+    selectedDrawEvent = TYPE_TRANSLATE;
 }
 
 void MainWindow::on_actionScaleIcon_triggered()
@@ -1001,6 +1002,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             }
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
+        if(selectedDrawEvent == TYPE_TRANSLATE && selectedId != 0)
+        {
+            doTranslate(selectedId, selectedX1-selectedX0, selectedY1-selectedY0, tempPainter);
+        }
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -1084,6 +1089,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
                 doScale(selectedId, centralX, centralY, (float)1/t, qPainter);
             }
         }
+        if(selectedDrawEvent == TYPE_TRANSLATE && selectedId != 0)
+        {
+            doTranslate(selectedId, selectedX1-selectedX0, selectedY1-selectedY0, qPainter);
+        }
         ui->label->setPixmap(*qPixmap);
     }
 }
@@ -1112,38 +1121,66 @@ void MainWindow::doTranslate(int id, int x, int y, QPainter *thisPainter)
     int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
     setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
 
+    int newX[2], newY[2];
+    vector<int> newVec;
     switch (v[index].type) {
     case TYPE_LINE:
-        v[index].para[0] += x; v[index].para[1] += y; v[index].para[2] += x; v[index].para[3] += y;
-        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        newX[0] = v[index].para[0] + x, newY[0] = v[index].para[1] + y;
+        newX[1] = v[index].para[2] + x, newY[1] = v[index].para[3] + y;
+        if(thisPainter == qPainter)
+        {
+            v[index].para[0] += x, v[index].para[1] += y;
+            v[index].para[2] += x, v[index].para[3] += y;
+        }
+        drawLineBresenham(newX[0], newY[0], newX[1], newY[1], thisPainter);
         break;
     case TYPE_ELLIPSE:
-        v[index].para[0] += x; v[index].para[1] += y;
-        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        newX[0] = v[index].para[0] + x, newY[0] = v[index].para[1] + y;
+        if(thisPainter == qPainter)
+            v[index].para[0] += x, v[index].para[1] += y;
+        drawEllipse(newX[0], newY[0], v[index].para[2], v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
-            v[index].para[i*2 + 1] += x;
-            v[index].para[i*2 + 2] += y;
+            newVec.push_back(v[index].para[i*2 + 1] + x);
+            newVec.push_back(v[index].para[i*2 + 2] + y);
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] += x;
+                v[index].para[i*2 + 2] += y;
+            }
         }
-        drawPolygon(v[index].para, 1, thisPainter);
+        drawPolygon(newVec, 1, thisPainter);
         break;
     case TYPE_CURVE_BEZIER:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
-            v[index].para[i*2 + 1] += x;
-            v[index].para[i*2 + 2] += y;
+            newVec.push_back(v[index].para[i*2 + 1] + x);
+            newVec.push_back(v[index].para[i*2 + 2] + y);
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] += x;
+                v[index].para[i*2 + 2] += y;
+            }
         }
-        drawCurveBezier(v[index].para, thisPainter);
+        drawCurveBezier(newVec, thisPainter);
         break;
     case TYPE_CURVE_BSPLINE:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
-            v[index].para[i*2 + 1] += x;
-            v[index].para[i*2 + 2] += y;
+            newVec.push_back(v[index].para[i*2 + 1] + x);
+            newVec.push_back(v[index].para[i*2 + 2] + y);
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] += x;
+                v[index].para[i*2 + 2] += y;
+            }
         }
-        drawCurveBspline(v[index].para, thisPainter);
+        drawCurveBspline(newVec, thisPainter);
         break;
     default:
         break;
