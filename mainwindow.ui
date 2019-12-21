@@ -96,8 +96,10 @@
    <addaction name="actionEllipseIcon"/>
    <addaction name="actionPolygonIcon"/>
    <addaction name="actionCurveIcon"/>
+   <addaction name="actionTranslateIcon"/>
    <addaction name="actionScaleIcon"/>
    <addaction name="actionRotateIcon"/>
+   <addaction name="actionClipIcon"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewCanvas">
@@ -260,6 +262,30 @@
    </property>
    <property name="text">
     <string>CurveIcon</string>
+   </property>
+  </action>
+  <action name="actionTranslateIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Translate.png</normaloff>:/myicon/imgs/Translate.png</iconset>
+   </property>
+   <property name="text">
+    <string>TranslateIcon</string>
+   </property>
+  </action>
+  <action name="actionClipIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Clip.jpg</normaloff>:/myicon/imgs/Clip.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>ClipIcon</string>
    </property>
   </action>
  </widget>

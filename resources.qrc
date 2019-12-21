@@ -17,5 +17,7 @@
         <file>imgs/Scale.png</file>
         <file>imgs/Pointer.png</file>
         <file>imgs/Curve.png</file>
+        <file>imgs/Translate.png</file>
+        <file>imgs/Clip.jpg</file>
     </qresource>
 </RCC>

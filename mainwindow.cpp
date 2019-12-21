@@ -941,7 +941,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
             if(v[selectedIndex].type == TYPE_ELLIPSE)
-               doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),tempPainter);
+            {
+               qDebug() << "selectedX1,Y1:" << selectedX1 << "," << selectedY1 << "   selectedX0,Y0" << selectedX0 << "," << selectedY0;
+
+               doScale(selectedId, centralX, centralY, sqrt((float)((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),tempPainter);
+            }
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
