@@ -967,10 +967,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         //    drawCurveBezier();
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            qDebug() << selectedId;
-            if(v[selectedIndex].type == TYPE_ELLIPSE)
-            {
-               int cx = centralX, cy = centralY, rx = v[selectedIndex].para[2], ry = v[selectedIndex].para[3];
+            //qDebug() << selectedId;
+            //if(v[selectedIndex].type == TYPE_ELLIPSE || v[selectedIndex].type == TYPE_POLYGON || v[selectedIndex].type == TYPE_CURVE_BEZIER || v[selectedIndex].type == TYPE_CURVE_BSPLINE)
+            //{
+               /*int cx = centralX, cy = centralY, rx = v[selectedIndex].para[2], ry = v[selectedIndex].para[3];
                int px = selectedX1, py = selectedY1, ex = v[selectedIndex].para[0], ey = v[selectedIndex].para[1];
                int b = 2*ry*ry*(cx-ex)*(px-cx)+2*rx*rx*(cy-ey)*(py-cy);
                int a = ry*ry*(px-cx)*(px-cx)+rx*rx*(py-cy)*(py-cy);
@@ -1001,9 +1001,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
                {
                    if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, tempPainter);
                    else doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
-               }
-            }
-            if(v[selectedIndex].type == TYPE_LINE)
+               }*/
+                int a = (selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY);
+                int b = (selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY);
+                float scale = sqrt((float)a/b);
+                doScale(selectedId, centralX, centralY, scale, tempPainter);
+            //}
+            /*if(v[selectedIndex].type == TYPE_LINE)
             {
                 int x0 = v[selectedIndex].para[0], y0 = v[selectedIndex].para[1];
                 int x1 = v[selectedIndex].para[2], y1 = v[selectedIndex].para[3];
@@ -1011,7 +1015,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
                 int b = (x1-x0)*(selectedY1-centralY)-(y1-y0)*(selectedX1-centralX);
                 float t = (float)a/b;
                 doScale(selectedId, centralX, centralY, (float)1/t, tempPainter);
-            }
+            }*/
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
         if(selectedDrawEvent == TYPE_TRANSLATE && selectedId != 0)
@@ -1060,46 +1064,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
-            if(v[selectedIndex].type == TYPE_ELLIPSE)
-            {
-               int cx = centralX, cy = centralY, rx = v[selectedIndex].para[2], ry = v[selectedIndex].para[3];
-               int px = selectedX1, py = selectedY1, ex = v[selectedIndex].para[0], ey = v[selectedIndex].para[1];
-               int b = 2*ry*ry*(cx-ex)*(px-cx)+2*rx*rx*(cy-ey)*(py-cy);
-               int a = ry*ry*(px-cx)*(px-cx)+rx*rx*(py-cy)*(py-cy);
-               int c = ry*ry*(cx-ex)*(cx-ex)+rx*rx*(cy-ey)*(cy-ey)-rx*rx*ry*ry;
-               long long delta = (long long)b*b-(long long)4*a*c;
-               float t1 = (float)(-b+sqrt((float)delta))/2/a;
-               float t2 = (float)(-b-sqrt((float)delta))/2/a;
-               if((t1<=0&&t2>=0)||(t1>=0&&t2<=0))
-               {
-                   if(t1 >= 0) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
-                   if(t2 >= 0) doScale(selectedId, cx, cy, (float)1/t2, qPainter);
-               }
-               else if(abs(t1)>=1&&abs(t2)>=1)
-               {
-                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
-                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
-               }
-               else if(abs(t1)<=1&&abs(t2)<=1)
-               {
-                   if(abs(t1) > abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
-                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
-               }
-               else
-               {
-                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
-                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
-               }
-            }
-            if(v[selectedIndex].type == TYPE_LINE)
-            {
-                int x0 = v[selectedIndex].para[0], y0 = v[selectedIndex].para[1];
-                int x1 = v[selectedIndex].para[2], y1 = v[selectedIndex].para[3];
-                int a = (y1-y0)*(centralX-x0)-(x1-x0)*(centralY-y0);
-                int b = (x1-x0)*(selectedY1-centralY)-(y1-y0)*(selectedX1-centralX);
-                float t = (float)a/b;
-                doScale(selectedId, centralX, centralY, (float)1/t, qPainter);
-            }
+            int a = (selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY);
+            int b = (selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY);
+            float scale = sqrt((float)a/b);
+            doScale(selectedId, centralX, centralY, scale, qPainter);
         }
         if(selectedDrawEvent == TYPE_TRANSLATE && selectedId != 0)
         {
