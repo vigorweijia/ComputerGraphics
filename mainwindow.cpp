@@ -990,6 +990,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
                    else doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
                }
             }
+            if(v[selectedIndex].type == TYPE_LINE)
+            {
+                int x0 = v[selectedIndex].para[0], y0 = v[selectedIndex].para[1];
+                int x1 = v[selectedIndex].para[2], y1 = v[selectedIndex].para[3];
+                int a = (y1-y0)*(centralX-x0)-(x1-x0)*(centralY-y0);
+                int b = (x1-x0)*(selectedY1-centralY)-(y1-y0)*(selectedX1-centralX);
+                float t = (float)a/b;
+                doScale(selectedId, centralX, centralY, (float)1/t, tempPainter);
+            }
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
         ui->tempLabel->setPixmap(*tempPixmap);
@@ -1064,6 +1073,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
                    if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
                    else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
                }
+            }
+            if(v[selectedIndex].type == TYPE_LINE)
+            {
+                int x0 = v[selectedIndex].para[0], y0 = v[selectedIndex].para[1];
+                int x1 = v[selectedIndex].para[2], y1 = v[selectedIndex].para[3];
+                int a = (y1-y0)*(centralX-x0)-(x1-x0)*(centralY-y0);
+                int b = (x1-x0)*(selectedY1-centralY)-(y1-y0)*(selectedX1-centralX);
+                float t = (float)a/b;
+                doScale(selectedId, centralX, centralY, (float)1/t, qPainter);
             }
         }
         ui->label->setPixmap(*qPixmap);
