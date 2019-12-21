@@ -807,7 +807,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
 {
     selectedId = 0;
     float disLimit = 10.0f;
-    int newId = -1;
+    int newId = 0;
     int sz = 0;
     float minDis = 1000.0f;
     int x0, y0, x1, y1;
@@ -854,7 +854,7 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             selectedIndex = i;
         }
     }
-    //qDebug() << "minDis: " << minDis << ", selectedId: " << newId;
+    qDebug() << "minDis: " << minDis << ", selectedId: " << newId << ", selectedIndex" << selectedIndex;
     if(minDis < disLimit) return newId;
     else return 0;
 }
@@ -954,11 +954,41 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         //    drawCurveBezier();
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
+            qDebug() << selectedId;
             if(v[selectedIndex].type == TYPE_ELLIPSE)
             {
-               qDebug() << "selectedX1,Y1:" << selectedX1 << "," << selectedY1 << "   selectedX0,Y0" << selectedX0 << "," << selectedY0;
-
-               doScale(selectedId, centralX, centralY, sqrt((float)((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),tempPainter);
+               int cx = centralX, cy = centralY, rx = v[selectedIndex].para[2], ry = v[selectedIndex].para[3];
+               int px = selectedX1, py = selectedY1, ex = v[selectedIndex].para[0], ey = v[selectedIndex].para[1];
+               int b = 2*ry*ry*(cx-ex)*(px-cx)+2*rx*rx*(cy-ey)*(py-cy);
+               int a = ry*ry*(px-cx)*(px-cx)+rx*rx*(py-cy)*(py-cy);
+               int c = ry*ry*(cx-ex)*(cx-ex)+rx*rx*(cy-ey)*(cy-ey)-rx*rx*ry*ry;
+               long long delta = (long long)b*b-(long long)4*a*c; //wdnmd
+               //qDebug() << "cx,cy:" << cx << cy << "rx,ry:" << rx << ry << "px,py:" << px << py << "ex,ey:" << ex << ey;
+               //qDebug() << (long long)b*b << (long long)-4*a*c;
+               //qDebug() << "a:" << a << "b:" << b << "c:" << c << "delta:" << delta;
+               float t1 = (float)(-b+sqrt((float)delta))/2/a;
+               float t2 = (float)(-b-sqrt((float)delta))/2/a;
+               qDebug() << t1 << " " << t2;
+               if((t1<=0&&t2>=0)||(t1>=0&&t2<=0))
+               {
+                   if(t1 >= 0) doScale(selectedId, cx, cy, (float)1/t1, tempPainter);
+                   if(t2 >= 0) doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
+               }
+               else if(abs(t1)>=1&&abs(t2)>=1)
+               {
+                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, tempPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
+               }
+               else if(abs(t1)<=1&&abs(t2)<=1)
+               {
+                   if(abs(t1) > abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, tempPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
+               }
+               else
+               {
+                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, tempPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, tempPainter);
+               }
             }
         }
         if(selectedDrawEvent == TYPE_ROTATE || selectedDrawEvent == TYPE_SCALE) drawCenter(tempPainter);
@@ -1005,9 +1035,37 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
             if(v[selectedIndex].type == TYPE_ELLIPSE)
-               doScale(selectedId, centralX, centralY, (float)sqrt(((selectedX1-centralX)*(selectedX1-centralX)+(selectedY1-centralY)*(selectedY1-centralY))/((selectedX0-centralX)*(selectedX0-centralX)+(selectedY0-centralY)*(selectedY0-centralY))),qPainter);
+            {
+               int cx = centralX, cy = centralY, rx = v[selectedIndex].para[2], ry = v[selectedIndex].para[3];
+               int px = selectedX1, py = selectedY1, ex = v[selectedIndex].para[0], ey = v[selectedIndex].para[1];
+               int b = 2*ry*ry*(cx-ex)*(px-cx)+2*rx*rx*(cy-ey)*(py-cy);
+               int a = ry*ry*(px-cx)*(px-cx)+rx*rx*(py-cy)*(py-cy);
+               int c = ry*ry*(cx-ex)*(cx-ex)+rx*rx*(cy-ey)*(cy-ey)-rx*rx*ry*ry;
+               long long delta = (long long)b*b-(long long)4*a*c;
+               float t1 = (float)(-b+sqrt((float)delta))/2/a;
+               float t2 = (float)(-b-sqrt((float)delta))/2/a;
+               if((t1<=0&&t2>=0)||(t1>=0&&t2<=0))
+               {
+                   if(t1 >= 0) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
+                   if(t2 >= 0) doScale(selectedId, cx, cy, (float)1/t2, qPainter);
+               }
+               else if(abs(t1)>=1&&abs(t2)>=1)
+               {
+                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
+               }
+               else if(abs(t1)<=1&&abs(t2)<=1)
+               {
+                   if(abs(t1) > abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
+               }
+               else
+               {
+                   if(abs(t1) < abs(t2)) doScale(selectedId, cx, cy, (float)1/t1, qPainter);
+                   else doScale(selectedId, cx, cy, (float)1/t2, qPainter);
+               }
+            }
         }
-
         ui->label->setPixmap(*qPixmap);
     }
 }
@@ -1184,51 +1242,83 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
     int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
     setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, thisPainter);
 
+    int newX[2], newY[2];
     int originX = -1, originY = -1;
+    vector<int> newVec;
     switch (v[index].type) {
     case TYPE_LINE:
         for(int i = 0; i < 2; i++)
         {
             originX = v[index].para[i*2], originY = v[index].para[i*2+1];
-            v[index].para[i*2] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-            v[index].para[i*2+1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            newX[i] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+            newY[i] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2] = newX[i];
+                v[index].para[i*2+1] = newY[i];
+            }
         }
-        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        drawLineBresenham(newX[0], newY[0], newX[1], newY[1], thisPainter);
         break;
     case TYPE_ELLIPSE:
         originX = v[index].para[0], originY = v[index].para[1];
-        v[index].para[0] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-        v[index].para[1] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
-        v[index].para[2] = (int)(float)v[index].para[2]*scale;
-        v[index].para[3] = (int)(float)v[index].para[3]*scale;
-        drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        newX[0] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+        newY[0] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+        newX[1] = (int)(float)v[index].para[2]*scale;
+        newY[1] = (int)(float)v[index].para[3]*scale;
+        if(thisPainter == qPainter)
+        {
+            v[index].para[0] = newX[0];
+            v[index].para[1] = newY[0];
+            v[index].para[2] = newX[1];
+            v[index].para[3] = newY[1];
+        }
+        drawEllipse(newX[0], newY[0], newX[1], newY[1], thisPainter);
         break;
     case TYPE_POLYGON:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            newVec.push_back((int)((float)(originX - cx)*scale + (float)cx + 0.5f));
+            newVec.push_back((int)((float)(originY - cy)*scale + (float)cy + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+                v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            }
         }
-        drawPolygon(v[index].para, 1, thisPainter);
+        drawPolygon(newVec, 1, thisPainter);
         break;
     case TYPE_CURVE_BEZIER:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            newVec.push_back((int)((float)(originX - cx)*scale + (float)cx + 0.5f));
+            newVec.push_back((int)((float)(originY - cy)*scale + (float)cy + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+                v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            }
         }
-        drawCurveBezier(v[index].para, thisPainter);
+        drawCurveBezier(newVec, thisPainter);
         break;
     case TYPE_CURVE_BSPLINE:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
-            v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            newVec.push_back((int)((float)(originX - cx)*scale + (float)cx + 0.5f));
+            newVec.push_back((int)((float)(originY - cy)*scale + (float)cy + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2+1] = (int)((float)(originX - cx)*scale + (float)cx + 0.5f);
+                v[index].para[i*2+2] = (int)((float)(originY - cy)*scale + (float)cy + 0.5f);
+            }
         }
-        drawCurveBspline(v[index].para, thisPainter);
+        drawCurveBspline(newVec, thisPainter);
         break;
     default:
         break;
