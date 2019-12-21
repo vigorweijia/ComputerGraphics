@@ -813,13 +813,18 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
     float minDis = 1000.0f;
     int x0, y0, x1, y1;
     int cx,cy,rx,ry,delta,tempDis1,tempDis2;
+    float r;
     for(int i = 0; i < v.size(); i++)
     {
         float tempDis = 1000.0f;
         switch (v[i].type) {
         case TYPE_LINE:
             x0 = v[i].para[0], y0 = v[i].para[1], x1 = v[i].para[2], y1 = v[i].para[3];
-            tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+            r = (float)((nx-x0)*(x1-x0)+(ny-y0)*(y1-y0))/((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+            if(0 <= r && r <= 1)
+                tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+            else
+                tempDis = min( sqrt((float)( (nx-x0)*(nx-x0)+(ny-y0)*(ny-y0) )) , sqrt((float)( (nx-x1)*(nx-x1)+(ny-y1)*(ny-y1) )) );
             break;
         case TYPE_ELLIPSE:
             cx = v[i].para[0], cy = v[i].para[1], rx = v[i].para[2], ry = v[i].para[3];
@@ -830,14 +835,21 @@ int MainWindow::selectGraphicUnit(int nx, int ny)
             tempDis = min(tempDis1, tempDis2);
             break;
         case TYPE_POLYGON:
+        case TYPE_CURVE_BEZIER:
+        case TYPE_CURVE_BSPLINE:
             sz = v[i].para[0];
             for(int j = 0; j < sz; j++)
             {
-                int x0 = v[i].para[(j*2)%sz+1];
-                int y0 = v[i].para[(j*2+1)%sz+1];
-                int x1 = v[i].para[(j*2+2)%sz+1];
-                int y1 = v[i].para[(j*2+3)%sz+1];
-                tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+                x0 = v[i].para[(j*2)%(sz*2)+1];
+                y0 = v[i].para[(j*2+1)%(sz*2)+1];
+                x1 = v[i].para[(j*2+2)%(sz*2)+1];
+                y1 = v[i].para[(j*2+3)%(sz*2)+1];
+                r = (float)((nx-x0)*(x1-x0)+(ny-y0)*(y1-y0))/((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+                if(0 <= r && r <= 1)
+                    tempDis = (float)abs((x0-nx)*(y1-ny)-(y0-ny)*(x1-nx))/sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+                else
+                    tempDis = min( sqrt((float)( (nx-x0)*(nx-x0)+(ny-y0)*(ny-y0) )) , sqrt((float)( (nx-x1)*(nx-x1)+(ny-y1)*(ny-y1) )) );
+                //qDebug() << "v[i].id:" << v[i].id << " tempDis:" << tempDis << " x0,y0:" << x0 << y0 << "x1,y1:" << x1 << y1 << "nx,ny:" << nx << ny;
                 if(tempDis < minDis) {
                     minDis = tempDis;
                     newId = v[i].id;
