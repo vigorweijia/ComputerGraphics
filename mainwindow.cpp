@@ -1022,6 +1022,28 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         {
             doTranslate(selectedId, selectedX1-selectedX0, selectedY1-selectedY0, tempPainter);
         }
+        if(selectedDrawEvent == TYPE_ROTATE && selectedId != 0)
+        {
+            if(selectedDrawEvent != TYPE_ELLIPSE)
+            {
+                int a = (selectedX0-centralX)*(selectedX0-centralX) + (selectedY0-centralY)*(selectedY0-centralY);
+                int b = (selectedX1-centralX)*(selectedX1-centralX) + (selectedY1-centralY)*(selectedY1-centralY);
+                int c = (selectedX0-centralX)*(selectedX1-centralX) + (selectedY0-centralY)*(selectedY1-centralY);
+                //qDebug() << "X0,Y0:" << selectedX0 << selectedY0 << "X1,Y1:" << selectedX1 << selectedY1 << "CX,CY" << centralX << centralY;
+                //qDebug() << "a:" << a << "b:" << b ;
+                float angle_arc = acos(c/sqrt((float)a)/sqrt((float)b));
+                int angle = angle_arc*180/3.1415926f;
+                //qDebug() << "angle_arc:" << angle_arc << "angle:" << angle;
+                if((selectedX0-centralX)*(selectedY1-centralY)-(selectedY0-centralY)*(selectedX1-centralX) <= 0) //clockwise
+                {
+                    doRotate(selectedId, centralX, centralY, -angle, tempPainter);
+                }
+                else //anti-clockwise
+                {
+                    doRotate(selectedId, centralX, centralY, angle, tempPainter);
+                }
+            }
+        }
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -1072,6 +1094,28 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         if(selectedDrawEvent == TYPE_TRANSLATE && selectedId != 0)
         {
             doTranslate(selectedId, selectedX1-selectedX0, selectedY1-selectedY0, qPainter);
+        }
+        if(selectedDrawEvent == TYPE_ROTATE && selectedId != 0)
+        {
+            if(selectedDrawEvent != TYPE_ELLIPSE)
+            {
+                int a = (selectedX0-centralX)*(selectedX0-centralX) + (selectedY0-centralY)*(selectedY0-centralY);
+                int b = (selectedX1-centralX)*(selectedX1-centralX) + (selectedY1-centralY)*(selectedY1-centralY);
+                int c = (selectedX0-centralX)*(selectedX1-centralX) + (selectedY0-centralY)*(selectedY1-centralY);
+                //qDebug() << "X0,Y0:" << selectedX0 << selectedY0 << "X1,Y1:" << selectedX1 << selectedY1 << "CX,CY" << centralX << centralY;
+                //qDebug() << "a:" << a << "b:" << b ;
+                float angle_arc = acos(c/sqrt((float)a)/sqrt((float)b));
+                int angle = angle_arc*180/3.1415926f;
+                //qDebug() << "angle_arc:" << angle_arc << "angle:" << angle;
+                if((selectedX0-centralX)*(selectedY1-centralY)-(selectedY0-centralY)*(selectedX1-centralX) <= 0) //clockwise
+                {
+                    doRotate(selectedId, centralX, centralY, -angle, qPainter);
+                }
+                else //anti-clockwise
+                {
+                    doRotate(selectedId, centralX, centralY, angle, qPainter);
+                }
+            }
         }
         ui->label->setPixmap(*qPixmap);
     }
@@ -1196,53 +1240,75 @@ void MainWindow::doRotate(int id, int cx, int cy, int angle, QPainter *thisPaint
     float pi = 3.1415926535f;
     float COS = cos((float)angle*pi/180);
     float SIN = sin((float)angle*pi/180);
+    int newX[2], newY[2];
+    vector<int> newVec;
     switch (v[index].type) {
     case TYPE_LINE:
         for(int i = 0; i < 2; i++)
         {
             int originX = v[index].para[i*2], originY = v[index].para[i*2+1]; //!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
-            v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS + 0.5f);
+            newX[i] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+            newY[i] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+            if(thisPainter == qPainter)
+                v[index].para[i*2] = newX[i], v[index].para[i*2+1] = newY[i];
         }
-        drawLineBresenham(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
+        drawLineBresenham(newX[0], newY[0], newX[1], newY[1], thisPainter);
         break;
     case TYPE_ELLIPSE:
-        for(int i = 0; i < 2; i++)
+        /*for(int i = 0; i < 2; i++)
         {
             int originX = v[index].para[i*2], originY = v[index].para[i*2+1];
             v[index].para[i*2] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
             v[index].para[i*2+1] = (int)((float)cy + (float)(originX - cx)*SIN - (float)(originY - cy)*COS + 0.5f);
-        }
+        }*/
         drawEllipse(v[index].para[0],v[index].para[1],v[index].para[2],v[index].para[3], thisPainter);
         break;
     case TYPE_POLYGON:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
-            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
-            qDebug() << "sin:" << sin((float)angle*pi/180) << " cos:" << cos((float)angle*pi/180);
-            qDebug() << "x:" << v[index].para[i*2 + 1] << " y:" << v[index].para[i*2 + 2];
+            newVec.push_back((int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f));
+            newVec.push_back((int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+                v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+                //qDebug() << "sin:" << sin((float)angle*pi/180) << " cos:" << cos((float)angle*pi/180);
+                //qDebug() << "x:" << v[index].para[i*2 + 1] << " y:" << v[index].para[i*2 + 2];
+            }
         }
-        drawPolygon(v[index].para, 1, thisPainter);
+        drawPolygon(newVec, 1, thisPainter);
         break;
     case TYPE_CURVE_BEZIER:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
-            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+            newVec.push_back((int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f));
+            newVec.push_back((int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+                v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+            }
         }
-        drawCurveBezier(v[index].para, thisPainter);
+        drawCurveBezier(newVec, thisPainter);
         break;
     case TYPE_CURVE_BSPLINE:
+        newVec.push_back(v[index].para[0]);
         for(int i = 0; i < v[index].para[0]; i++)
         {
             int originX = v[index].para[i*2 + 1], originY = v[index].para[i*2 + 2];
-            v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
-            v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+            newVec.push_back((int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f));
+            newVec.push_back((int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f));
+            if(thisPainter == qPainter)
+            {
+                v[index].para[i*2 + 1] = (int)((float)cx + (float)(originX - cx)*COS - (float)(originY - cy)*SIN + 0.5f);
+                v[index].para[i*2 + 2] = (int)((float)cy + (float)(originX - cx)*SIN + (float)(originY - cy)*COS + 0.5f);
+            }
         }
-        drawCurveBspline(v[index].para, thisPainter);
+        drawCurveBspline(newVec, thisPainter);
         break;
     default:
         break;
