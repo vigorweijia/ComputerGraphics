@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -35,7 +35,9 @@ SOURCES += \
     RotateDialog.cpp \
     ScaleDialog.cpp \
     ClipDialog.cpp \
-    CurveDialog.cpp
+    CurveDialog.cpp \
+    GalaxyDialog.cpp \
+    GalaxyWidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +50,9 @@ HEADERS += \
     RotateDialog.h \
     ScaleDialog.h \
     ClipDialog.h \
-    CurveDialog.h
+    CurveDialog.h \
+    GalaxyDialog.h \
+    GalaxyWidget.h
 
 FORMS += \
         mainwindow.ui \
@@ -61,7 +65,11 @@ FORMS += \
     RotateDialog.ui \
     ScaleDialog.ui \
     ClipDialog.ui \
-    CurveDialog.ui
+    CurveDialog.ui \
+    GalaxyDialog.ui \
+    GalaxyWidget.ui
 
 RESOURCES += \
     resources.qrc
+
+LIBS += -lopengl32 -lglu32

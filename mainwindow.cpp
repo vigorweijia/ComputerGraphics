@@ -63,6 +63,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(curveDialog, SIGNAL(drawCurveEvent(int,int,vector<int>,int)), this, SLOT(onReceive_DrawCurve(int,int,vector<int>,int)));
 //----------------------------------------------
 
+//-------------Galaxy Dialog--------------------
+    galaxyDialog = new GalaxyDialog();
+//----------------------------------------------
+
 //-------------Selected Event-------------------
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
@@ -1703,4 +1707,9 @@ void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
     }
     delete []controlPoint;
     delete []workPoint;
+}
+
+void MainWindow::on_actionHuajiIcon_triggered()
+{
+
 }

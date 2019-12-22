@@ -12,6 +12,7 @@
 #include "ScaleDialog.h"
 #include "ClipDialog.h"
 #include "CurveDialog.h"
+#include "GalaxyDialog.h"
 #include <vector>
 #include <QDebug>
 #include <QPainter>
@@ -72,6 +73,7 @@ public:
     ScaleDialog *scaleDialog;
     ClipDialog *clipDialog;
     CurveDialog *curveDialog;
+    GalaxyDialog *galaxyDialog;
     //------------------------------------
 
     //---------Drag mouse to draw---------
@@ -198,6 +200,7 @@ private slots:
     void on_actionRotateIcon_triggered();
     void on_actionPointerIcon_triggered();
     void on_actionClipIcon_triggered();
+    void on_actionHuajiIcon_triggered();
     //----------------------------------------
 
     //-------------------------Signals from child dialog-------------------------------
