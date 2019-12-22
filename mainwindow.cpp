@@ -743,6 +743,7 @@ void MainWindow::on_actionClipIcon_triggered()
 {
     cancelSelectedIcon();
     ui->actionClipIcon->setChecked(true);
+    selectedDrawEvent = TYPE_CLIP;
 }
 
 int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)
@@ -1044,6 +1045,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
                 }
             }
         }
+        if(selectedDrawEvent == TYPE_CLIP)
+        {
+            QColor tempColor(0, 100, 200);
+            tempPainter->setPen(tempColor);
+            tempPainter->drawRect(min(selectedX0, selectedX1), min(selectedY0, selectedY1), abs(selectedX0-selectedX1), abs(selectedY0-selectedY1));
+            tempPainter->setPen(*qColor);
+        }
         ui->tempLabel->setPixmap(*tempPixmap);
     }
 }
@@ -1115,6 +1123,18 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
                 {
                     doRotate(selectedId, centralX, centralY, angle, qPainter);
                 }
+            }
+        }
+        if(selectedDrawEvent == TYPE_CLIP)
+        {
+            int x0 = min(selectedX0, selectedX1);
+            int y0 = min(selectedY0, selectedY1);
+            int x1 = max(selectedX0, selectedX1);
+            int y1 = max(selectedY0, selectedY1);
+            for(int i = 0; i < v.size(); i++)
+            {
+                if(v[i].type == TYPE_LINE)
+                    doClipLiangBarsky(v[i].id, x0, y0, x1, y1, qPainter);
             }
         }
         ui->label->setPixmap(*qPixmap);
