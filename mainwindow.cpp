@@ -1711,5 +1711,5 @@ void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
 
 void MainWindow::on_actionHuajiIcon_triggered()
 {
-
+    galaxyDialog->show();
 }

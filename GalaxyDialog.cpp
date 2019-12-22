@@ -6,7 +6,6 @@ GalaxyDialog::GalaxyDialog(QWidget *parent) :
     ui(new Ui::GalaxyDialog)
 {
     ui->setupUi(this);
-    galaxyWidget = new GalaxyWidget();
 }
 
 GalaxyDialog::~GalaxyDialog()

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QKeyEvent>
-#include "GalaxyWidget.h"
 
 namespace Ui {
 class GalaxyDialog;
@@ -27,7 +26,6 @@ private:
     void setYRotation(int angle);
     void setZRotation(int angle);
     void nomarlizedAngle(int *angle);
-    GalaxyWidget *galaxyWidget;
     QPoint lastPos;
     int xRot;
     int yRot;
