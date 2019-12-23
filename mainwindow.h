@@ -14,6 +14,8 @@
 #include "CurveDialog.h"
 #include "GalaxyDialog.h"
 #include <vector>
+#include <queue>
+#include <cstring>
 #include <QDebug>
 #include <QPainter>
 #include <QPixmap>
@@ -27,6 +29,7 @@
 #include <QPen>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QImage>
 
 #define TYPE_NOTHING 0
 #define TYPE_LINE 1
@@ -87,7 +90,7 @@ public:
     int centralX, centralY;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)
-    bool pixmapVis[1024][1024];
+    bool pixmapVis[512][512];
     QImage *qImage;
     void setPixelColor(int x, int y, QPainter *thisPainter, QColor thisColor);
     void drawCenter(QPainter *thisPainter);

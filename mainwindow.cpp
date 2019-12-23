@@ -901,9 +901,22 @@ void MainWindow::drawCenter(QPainter *thisPainter)
 
 void MainWindow::setPixelColor(int x, int y, QPainter *thisPainter, QColor thisColor)
 {
-    if(x < 0 || y < 0 || x > newCanvasWidth || y > newCanvasHeight) return;
-    if(pixmapVis[x][y] == true) return;
-
+    queue<QPoint> Q;
+    Q.push(QPoint(x,y));
+    pixmapVis[x][y] = true;
+    while(!Q.empty())
+    {
+        QPoint fr = Q.front();
+        Q.pop();
+        int qx = fr.x();
+        int qy = fr.y();
+        if(qImage->pixelColor(qx, qy) != thisColor) continue;
+        thisPainter->drawPoint(qx, qy);
+        if(qx-1 >= 0 && pixmapVis[qx-1][qy] == false) {Q.push(QPoint(qx-1, qy)); pixmapVis[qx-1][qy] = true;}
+        if(qx+1 < newCanvasWidth && pixmapVis[qx+1][qy] == false) {Q.push(QPoint(qx+1, qy)); pixmapVis[qx+1][qy] = true;}
+        if(qy-1 >= 0 && pixmapVis[qx][qy-1] == false) {Q.push(QPoint(qx, qy-1)); pixmapVis[qx][qy-1] = true;}
+        if(qy+1 < newCanvasHeight && pixmapVis[qx][qy+1] == false) {Q.push(QPoint(qx, qy+1)); pixmapVis[qx][qy+1] = true;}
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
@@ -948,8 +961,9 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     if(selectedDrawEvent == TYPE_BUCKET)
     {
         memset(pixmapVis, 0, sizeof pixmapVis);
-        qImage = new QImage(qPixmap);
+        qImage = new QImage(qPixmap->toImage());
         setPixelColor(relativeX, relativeY, qPainter, qImage->pixelColor(relativeX, relativeY));
+        ui->label->setPixmap(*qPixmap);
     }
 }
 
