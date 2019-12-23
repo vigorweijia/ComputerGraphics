@@ -3,21 +3,23 @@
         <file>imgs/add.png</file>
         <file>imgs/bk.png</file>
         <file>imgs/close.png</file>
-        <file>imgs/Ellipse.png</file>
         <file>imgs/floppy-icon.png</file>
         <file>imgs/huaji.png</file>
-        <file>imgs/Line.png</file>
         <file>imgs/open.png</file>
         <file>imgs/redo.png</file>
         <file>imgs/save-as.png</file>
         <file>imgs/stop-sign.png</file>
         <file>imgs/txt_files.png</file>
-        <file>imgs/Polygon.png</file>
-        <file>imgs/Rotate.png</file>
-        <file>imgs/Scale.png</file>
         <file>imgs/Pointer.png</file>
-        <file>imgs/Curve.png</file>
-        <file>imgs/Translate.png</file>
-        <file>imgs/Clip.jpg</file>
+        <file>imgs/Bucket.png</file>
+        <file>imgs/Palette.png</file>
+        <file>imgs/ellipse_stroked_512px_1168912_easyicon.net.png</file>
+        <file>imgs/polygon_512px_1169471_easyicon.net.png</file>
+        <file>imgs/arrows_hv_170px_1223154_easyicon.net.png</file>
+        <file>imgs/Rotation.png</file>
+        <file>imgs/Clip.png</file>
+        <file>imgs/Curved_Line_1102px_1142698_easyicon.net.png</file>
+        <file>imgs/resize_333px_1148261_easyicon.net.png</file>
+        <file>imgs/software_vector_line_266px_1183081_easyicon.net.png</file>
     </qresource>
 </RCC>

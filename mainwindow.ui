@@ -102,6 +102,9 @@
    <addaction name="actionRotateIcon"/>
    <addaction name="actionClipIcon"/>
    <addaction name="separator"/>
+   <addaction name="actionBucketIcon"/>
+   <addaction name="actionPaletteIcon"/>
+   <addaction name="separator"/>
    <addaction name="actionHuajiIcon"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -186,7 +189,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Line.png</normaloff>:/myicon/imgs/Line.png</iconset>
+     <normaloff>:/myicon/imgs/software_vector_line_266px_1183081_easyicon.net.png</normaloff>:/myicon/imgs/software_vector_line_266px_1183081_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>LineIcon</string>
@@ -201,7 +204,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Ellipse.png</normaloff>:/myicon/imgs/Ellipse.png</iconset>
+     <normaloff>:/myicon/imgs/ellipse_stroked_512px_1168912_easyicon.net.png</normaloff>:/myicon/imgs/ellipse_stroked_512px_1168912_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>EllipseIcon</string>
@@ -213,7 +216,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Polygon.png</normaloff>:/myicon/imgs/Polygon.png</iconset>
+     <normaloff>:/myicon/imgs/polygon_512px_1169471_easyicon.net.png</normaloff>:/myicon/imgs/polygon_512px_1169471_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>PolygonIcon</string>
@@ -225,7 +228,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Scale.png</normaloff>:/myicon/imgs/Scale.png</iconset>
+     <normaloff>:/myicon/imgs/resize_333px_1148261_easyicon.net.png</normaloff>:/myicon/imgs/resize_333px_1148261_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>ScaleIcon</string>
@@ -237,7 +240,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Rotate.png</normaloff>:/myicon/imgs/Rotate.png</iconset>
+     <normaloff>:/myicon/imgs/Rotation.png</normaloff>:/myicon/imgs/Rotation.png</iconset>
    </property>
    <property name="text">
     <string>RotateIcon</string>
@@ -261,7 +264,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Curve.png</normaloff>:/myicon/imgs/Curve.png</iconset>
+     <normaloff>:/myicon/imgs/Curved_Line_1102px_1142698_easyicon.net.png</normaloff>:/myicon/imgs/Curved_Line_1102px_1142698_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>CurveIcon</string>
@@ -273,7 +276,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Translate.png</normaloff>:/myicon/imgs/Translate.png</iconset>
+     <normaloff>:/myicon/imgs/arrows_hv_170px_1223154_easyicon.net.png</normaloff>:/myicon/imgs/arrows_hv_170px_1223154_easyicon.net.png</iconset>
    </property>
    <property name="text">
     <string>TranslateIcon</string>
@@ -285,7 +288,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/myicon/imgs/Clip.jpg</normaloff>:/myicon/imgs/Clip.jpg</iconset>
+     <normaloff>:/myicon/imgs/Clip.png</normaloff>:/myicon/imgs/Clip.png</iconset>
    </property>
    <property name="text">
     <string>ClipIcon</string>
@@ -298,6 +301,27 @@
    </property>
    <property name="text">
     <string>HuajiIcon</string>
+   </property>
+  </action>
+  <action name="actionBucketIcon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Bucket.png</normaloff>:/myicon/imgs/Bucket.png</iconset>
+   </property>
+   <property name="text">
+    <string>BucketIcon</string>
+   </property>
+  </action>
+  <action name="actionPaletteIcon">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/myicon/imgs/Palette.png</normaloff>:/myicon/imgs/Palette.png</iconset>
+   </property>
+   <property name="text">
+    <string>PaletteIcon</string>
    </property>
   </action>
  </widget>
