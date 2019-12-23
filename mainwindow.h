@@ -38,6 +38,7 @@
 #define TYPE_ROTATE 7
 #define TYPE_CLIP 8
 #define TYPE_TRANSLATE 9
+#define TYPE_BUCKET 10
 
 using namespace std;
 
@@ -86,6 +87,9 @@ public:
     int centralX, centralY;
     //return allocated id
     //when type == TYPE_POLYGON, must input id(id ==0 when first save Polygon)
+    bool pixmapVis[1024][1024];
+    QImage *qImage;
+    void setPixelColor(int x, int y, QPainter *thisPainter, QColor thisColor);
     void drawCenter(QPainter *thisPainter);
     int saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id);
     int selectGraphicUnit(int nx, int ny); //return 0 if none
@@ -201,6 +205,8 @@ private slots:
     void on_actionPointerIcon_triggered();
     void on_actionClipIcon_triggered();
     void on_actionHuajiIcon_triggered();
+    void on_actionBucketIcon_triggered();
+    void on_actionPaletteIcon_triggered();
     //----------------------------------------
 
     //-------------------------Signals from child dialog-------------------------------

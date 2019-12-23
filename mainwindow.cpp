@@ -150,6 +150,10 @@ void MainWindow::createNewCanvas(int width, int height)
     qColor = new QColor(0,0,0);
     //-------------------------------------------------------
 
+    //-------------Clear GrapgicUnit List--------------------
+    v.clear();
+    //-------------------------------------------------------
+
     ui->label->setPixmap(*qPixmap);
     ui->tempLabel->setPixmap(*tempPixmap);
     //qPixmap->save("1.bmp");
@@ -683,6 +687,7 @@ void MainWindow::cancelSelectedIcon()
     ui->actionScaleIcon->setChecked(false);
     ui->actionRotateIcon->setChecked(false);
     ui->actionClipIcon->setChecked(false);
+    ui->actionBucketIcon->setChecked(false);
     selectedDrawEvent = TYPE_NOTHING;
 }
 
@@ -748,6 +753,13 @@ void MainWindow::on_actionClipIcon_triggered()
     cancelSelectedIcon();
     ui->actionClipIcon->setChecked(true);
     selectedDrawEvent = TYPE_CLIP;
+}
+
+void MainWindow::on_actionBucketIcon_triggered()
+{
+    cancelSelectedIcon();
+    ui->actionBucketIcon->setChecked(true);
+    selectedDrawEvent = TYPE_BUCKET;
 }
 
 int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, int id)
@@ -887,6 +899,13 @@ void MainWindow::drawCenter(QPainter *thisPainter)
     thisPainter->setPen(*qColor);
 }
 
+void MainWindow::setPixelColor(int x, int y, QPainter *thisPainter, QColor thisColor)
+{
+    if(x < 0 || y < 0 || x > newCanvasWidth || y > newCanvasHeight) return;
+    if(pixmapVis[x][y] == true) return;
+
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     int relativeX = e->x() - baseX;
@@ -926,6 +945,12 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         }
         selectedId = selectGraphicUnit(relativeX, relativeY);
      }
+    if(selectedDrawEvent == TYPE_BUCKET)
+    {
+        memset(pixmapVis, 0, sizeof pixmapVis);
+        qImage = new QImage(qPixmap);
+        setPixelColor(relativeX, relativeY, qPainter, qImage->pixelColor(relativeX, relativeY));
+    }
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *e)
@@ -1712,4 +1737,9 @@ void MainWindow::drawCurveBezier(vector<int> v, QPainter *thisPainter)
 void MainWindow::on_actionHuajiIcon_triggered()
 {
     galaxyDialog->show();
+}
+
+void MainWindow::on_actionPaletteIcon_triggered()
+{
+
 }
