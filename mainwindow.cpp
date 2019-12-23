@@ -667,12 +667,14 @@ void MainWindow::setColor(int R, int G, int B, QPainter *thisPainter)
 
 void MainWindow::cancelSelectedIcon()
 {
-    if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)&& selectedX1 != -1 && selectedY1 != -1) //complete drawing
+    if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER || selectedDrawEvent == TYPE_CURVE_BSPLINE)&& selectedX1 != -1 && selectedY1 != -1) //complete drawing
     {
         if(selectedDrawEvent == TYPE_POLYGON)
             drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
         if(selectedDrawEvent == TYPE_CURVE_BEZIER)
             drawCurveBezier(v[allocatedIndex].para, qPainter);
+        if(selectedDrawEvent == TYPE_CURVE_BSPLINE)
+            drawCurveBspline(v[allocatedIndex].para, qPainter);
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);
@@ -723,7 +725,7 @@ void MainWindow::on_actionCurveIcon_triggered()
 {
     cancelSelectedIcon();
     ui->actionCurveIcon->setChecked(true);
-    selectedDrawEvent = TYPE_CURVE_BEZIER;
+    selectedDrawEvent = TYPE_CURVE_BSPLINE;
     selectedX1 = selectedY1 = -1;
 }
 
@@ -766,7 +768,7 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
 {
     int minn = 0;
     int newId;
-    if(type == TYPE_POLYGON || type == TYPE_CURVE_BEZIER)
+    if(type == TYPE_POLYGON || type == TYPE_CURVE_BSPLINE || type == TYPE_CURVE_BEZIER)
     {
         if(id == 0)
         {
@@ -775,11 +777,20 @@ int MainWindow::saveDragGraphicUnit(int x0, int y0, int x1, int y1, int type, in
             newId = minn - 1;
             GraphicUnit g;
             g.id = newId;
-            g.para.push_back(2);
-            g.para.push_back(x0);
-            g.para.push_back(y0);
-            g.para.push_back(x1);
-            g.para.push_back(y1);
+            if(x0 == y0 && x1 == y1)
+            {
+                g.para.push_back(1);
+                g.para.push_back(x0);
+                g.para.push_back(y0);
+            }
+            else
+            {
+                g.para.push_back(2);
+                g.para.push_back(x0);
+                g.para.push_back(y0);
+                g.para.push_back(x1);
+                g.para.push_back(y1);
+            }
             g.color.r = (char)((qColor->red())&(0xff));
             g.color.g = (char)((qColor->green())&(0xff));
             g.color.b = (char)((qColor->blue())&(0xff));
@@ -942,7 +953,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     if(clickTimes == 0)
     {
         clickTimes = 1;
-        if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)&& selectedX1 != -1 && selectedY1 != -1)
+        if((selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER || selectedDrawEvent == TYPE_CURVE_BSPLINE)&& selectedX1 != -1 && selectedY1 != -1)
         {
             //selectedX1 and Y1 are set to -1 when
             //clicking the button drawPolygonIcon or finishing drawing a Polygon
@@ -973,7 +984,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *e)
     int relativeX = e->x() - baseX;
     int relativeY = e->y() - baseY;
     if(relativeX < 0 || relativeY < 0 || relativeX > newCanvasWidth || relativeY > newCanvasHeight) return;
-    if(selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER)
+    if(selectedDrawEvent == TYPE_POLYGON || selectedDrawEvent == TYPE_CURVE_BEZIER || selectedDrawEvent == TYPE_CURVE_BSPLINE)
     {
         selectedX1 = relativeX;
         selectedY1 = relativeY;
@@ -981,6 +992,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *e)
             drawLineBresenham((float)startX, (float)startY, (float)selectedX1, (float)selectedY1, qPainter);
         if(selectedDrawEvent == TYPE_CURVE_BEZIER)
             drawCurveBezier(v[allocatedIndex].para, qPainter);
+        if(selectedDrawEvent == TYPE_CURVE_BSPLINE)
+            drawCurveBspline(v[allocatedIndex].para, qPainter);
         tempPixmap->fill(Qt::transparent);
         ui->tempLabel->setPixmap(*tempPixmap);
         ui->label->setPixmap(*qPixmap);
@@ -1012,8 +1025,18 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             drawEllipse((selectedX0+selectedX1)/2,(selectedY0+selectedY1)/2,abs(selectedX1-selectedX0)/2,abs(selectedY1-selectedY0)/2,tempPainter);
         if(selectedDrawEvent == TYPE_POLYGON)
             drawLineBresenham((float)selectedX0, (float)selectedY0, (float)selectedX1, (float)selectedY1, tempPainter);
-        //if(selectedDrawEvent == TYPE_CURVE_BEZIER)
-        //    drawCurveBezier();
+        if(selectedDrawEvent == TYPE_CURVE_BSPLINE && allocatedId != 0)
+        {
+            //allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_CURVE_BEZIER, allocatedId);
+            v[allocatedIndex].para[0] += 1;
+            v[allocatedIndex].para.push_back(selectedX1);
+            v[allocatedIndex].para.push_back(selectedY1);
+            drawCurveBspline(v[allocatedIndex].para, tempPainter);
+            v[allocatedIndex].para.pop_back();
+            v[allocatedIndex].para.pop_back();
+            v[allocatedIndex].para[0] -= 1;
+            //ui->tempLabel->setPixmap(*tempPixmap);
+        }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
         {
             //qDebug() << selectedId;
@@ -1142,6 +1165,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         {
             allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_CURVE_BEZIER, allocatedId);
             drawCurveBezier(v[allocatedIndex].para, tempPainter);
+            ui->tempLabel->setPixmap(*tempPixmap);
+        }
+        if(selectedDrawEvent == TYPE_CURVE_BSPLINE)
+        {
+            allocatedId = saveDragGraphicUnit(selectedX0, selectedY0, selectedX1, selectedY1, TYPE_CURVE_BSPLINE, allocatedId);
+            drawCurveBspline(v[allocatedIndex].para, tempPainter);
             ui->tempLabel->setPixmap(*tempPixmap);
         }
         if(selectedDrawEvent == TYPE_SCALE && selectedId != 0)
@@ -1696,13 +1725,17 @@ void MainWindow::drawCurveBspline(vector<int> vec, QPainter *thisPainter)
      * =(-1/6P0+1/2P1-1/2P2+1/6P3)t^3+(1/2P0-P1+1/2P2)t^2+(-1/2P0+1/2P2)t+(1/6P0+2/3P1+1/6P2)
     *****/
     int n = vec[0];
+    if(n < 4)
+    {
+        for(int i = 0; i < n; i++) qDebug() << vec[i*2+1] << "," << vec[i*2+2];
+    }
     for(int i = 0; i < n-3; i++)
     {
         int x0 = vec[i*2+1], y0 = vec[i*2+2];
         int x1 = vec[i*2+3], y1 = vec[i*2+4];
         int x2 = vec[i*2+5], y2 = vec[i*2+6];
         int x3 = vec[i*2+7], y3 = vec[i*2+8];
-        qDebug() << "controlPoint: " << x0 << "," << y0 << " " << x1 << "," << y1 << " " << x2 << "," << y2 << " " << x3 << "," << y3;
+        qDebug() << "controlPoint[" << i << "]: " << x0 << "," << y0 << " " << x1 << "," << y1 << " " << x2 << "," << y2 << " " << x3 << "," << y3;
         double a3 = (double)-x0/6+x1/2-x2/2+x3/6, b3 = (double)-y0/6+y1/2-y2/2+y3/6;
         double a2 = (double)x0/2-x1+x2/2, b2 = (double)y0/2-y1+y2/2;
         double a1 = (double)-x0/2+x2/2, b1 = (double)-y0/2+y2/2;
