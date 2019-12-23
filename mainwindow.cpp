@@ -910,8 +910,8 @@ void MainWindow::setPixelColor(int x, int y, QPainter *thisPainter, QColor thisC
         Q.pop();
         int qx = fr.x();
         int qy = fr.y();
-        if(qImage->pixelColor(qx, qy) != thisColor) continue;
-        thisPainter->drawPoint(qx, qy);
+        if(qImage->pixelColor(fr) != thisColor) continue;
+        thisPainter->drawPoint(fr);
         if(qx-1 >= 0 && pixmapVis[qx-1][qy] == false) {Q.push(QPoint(qx-1, qy)); pixmapVis[qx-1][qy] = true;}
         if(qx+1 < newCanvasWidth && pixmapVis[qx+1][qy] == false) {Q.push(QPoint(qx+1, qy)); pixmapVis[qx+1][qy] = true;}
         if(qy-1 >= 0 && pixmapVis[qx][qy-1] == false) {Q.push(QPoint(qx, qy-1)); pixmapVis[qx][qy-1] = true;}
@@ -997,6 +997,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     if(clickTimes == 0) return;
     else
     {
+        QPen tempPen;
+        tempPen.setWidth(3);
+        tempPen.setColor(QColor(0, 255, 255));
+        tempPainter->setPen(tempPen);
+
         selectedX1 = relativeX;
         selectedY1 = relativeY;
         tempPixmap->fill(Qt::transparent);
@@ -1096,6 +1101,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
             tempPainter->setPen(*qColor);
         }
         ui->tempLabel->setPixmap(*tempPixmap);
+
+        tempPen.setWidth(1);
+        tempPen.setColor(*qColor);
+        tempPainter->setPen(tempPen);
     }
 }
 
@@ -1404,7 +1413,7 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
 
     createTempPixmapExceptId(id);
     int tempR = qColor->red(), tempG = qColor->green(), tempB = qColor->blue();
-    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, thisPainter);
+    setColor(v[index].color.r&0x000000ff, v[index].color.g&0x000000ff, v[index].color.b&0x000000ff, qPainter);
 
     int newX[2], newY[2];
     int originX = -1, originY = -1;
@@ -1487,11 +1496,12 @@ void MainWindow::doScale(int id, int cx, int cy, float scale, QPainter *thisPain
     default:
         break;
     }
-    if(thisPainter == qPainter)
+    /*if(thisPainter == qPainter)
         ui->label->setPixmap(*qPixmap);
     else
-        ui->tempLabel->setPixmap(*tempPixmap);
-    setColor(tempR, tempG, tempB, thisPainter);
+        ui->tempLabel->setPixmap(*tempPixmap);*/
+    ui->label->setPixmap(*qPixmap);
+    setColor(tempR, tempG, tempB, qPainter);
 }
 
 void MainWindow::on_actionClip_triggered()
@@ -1755,5 +1765,8 @@ void MainWindow::on_actionHuajiIcon_triggered()
 
 void MainWindow::on_actionPaletteIcon_triggered()
 {
-
+    QColor tempColor = QColorDialog::getColor();
+    *qColor = tempColor;
+    qPainter->setPen(*qColor);
+    tempPainter->setPen(*qColor);
 }
