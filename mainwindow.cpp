@@ -71,6 +71,10 @@ MainWindow::MainWindow(QWidget *parent) :
     selectedDrawEvent = TYPE_NOTHING;
     clickTimes = 0;
 //----------------------------------------------
+
+//-------------Set default color----------------
+    qColor = new QColor(0,0,0);
+//----------------------------------------------
 }
 
 MainWindow::~MainWindow()
@@ -127,7 +131,9 @@ void MainWindow::createNewCanvas(int width, int height)
     //-------------Create the QPainter object----------------
     qPainter = new QPainter(qPixmap);
     qPainter->fillRect(0,0,width,height,Qt::white);
+    qPainter->setPen(*qColor);
     tempPainter = new QPainter(tempPixmap);
+    tempPainter->setPen(*qColor);
     //tempPainter->fillRect(30,30,40,40,Qt::blue);
     //-------------------------------------------------------
 
@@ -138,16 +144,16 @@ void MainWindow::createNewCanvas(int width, int height)
     //-------------------------------------------------------
 
     //-------------Reset the label (Canvas)------------------
-    if(width > ui->label->width() || height > ui->label->height()) {
+    //if(width > ui->label->width() || height > ui->label->height()) {
         ui->label->setGeometry(10,10,width,height);
         ui->tempLabel->setGeometry(10,10,width,height);
-    }
+    //}
     baseX = ui->label->x() + ui->centralWidget->x();
     baseY = ui->label->y() + ui->centralWidget->y();
     //-------------------------------------------------------
 
     //-------------Set default color-------------------------
-    qColor = new QColor(0,0,0);
+    //qColor = new QColor(0,0,0);
     //-------------------------------------------------------
 
     //-------------Clear GrapgicUnit List--------------------
@@ -323,6 +329,8 @@ void MainWindow::doImportFromFile(QString fileName, QString savingDir)
                 g.color.g = (char)((qColor->green())&0xff);
                 g.color.b = (char)((qColor->blue())&0xff);
                 v.push_back(g);
+                //qDebug() << "color";
+                //qDebug() << qColor->red() << qColor->green() << qColor->blue();
                 if(type == 0) drawCurveBspline(g.para, qPainter);
                 else if(type == 1) drawCurveBezier(g.para, qPainter);
                 ui->label->setPixmap(*qPixmap);
@@ -417,12 +425,12 @@ void MainWindow::onReceive_DrawLine(int id, float x0, float y0, float x1, float 
 void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1, QPainter *thisPainter)
 {
     if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
-    if(x1 == x0) {
+    if((int)x1 == (int)x0) {
         if(y1 < y0) swap(y1, y0);
         for(int yi = (int)y0; yi <= (int)y1; yi++) thisPainter->drawPoint((int)x0, yi);
         return;
     }
-    if(y1 == y0) {
+    if((int)y1 == (int)y0) {
         for(int xi = (int)x0; xi <= (int)x1; xi++) thisPainter->drawPoint(xi, (int)y0);
         return;
     }
@@ -450,16 +458,16 @@ void MainWindow::drawLineDDA(float x0, float y0, float x1, float y1, QPainter *t
 void MainWindow::drawLineBresenham(float x0, float y0, float x1, float y1, QPainter *thisPainter)
 {
     if(x1 < x0) {swap(x0,x1); swap(y0,y1);}
-    if(x1 == x0) {
+    if((int)x1 == (int)x0) {
         if(y1 < y0) swap(y1, y0);
         for(int yi = (int)y0; yi <= (int)y1; yi++) thisPainter->drawPoint((int)x0, yi);
         return;
     }
-    if(y1 == y0) {
+    if((int)y1 == (int)y0) {
         for(int xi = (int)x0; xi <= (int)x1; xi++) thisPainter->drawPoint(xi, (int)y0);
         return;
     }
-    if(x1 - x0 == y1 - y0) {
+    if((int)x1 - (int)x0 == (int)y1 - (int)y0) {
         for(int xi = (int)x0; xi <= (int)x1; xi++) thisPainter->drawPoint(xi, (int)y0 + xi - (int)x0);
         return;
     }
@@ -1574,7 +1582,7 @@ void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, Q
     {
         drawLineBresenham(endX1, endY1, endX2, endY2, qPainter);
     }
-    else if((endCode1&endCode2) != 0) //complete outside area
+    else if((endCode1&endCode2) != 0) //completely outside area
     {
         v[index].para[0] = v[index].para[1] = v[index].para[2] = v[index].para[3] = 0;
     }
@@ -1605,13 +1613,20 @@ void MainWindow::doClipCohenSutherland(int id, int x1, int y1, int x2, int y2, Q
             if(endY1 > y2) {endX1 = newX; endY1 = y2;}
             else if(endY2 > y2) {endX2 = newX; endY2 = y2;}
         }
-        //qDebug() << "(x1,y1):" << x1 << "," << y2 << " (x2,y2):" << x2 << "," << y2;
+        //qDebug() << "(x1,y1):" << x1 << "," << y1 << " (x2,y2):" << x2 << "," << y2;
         //qDebug() << "endX1:" << endX1 << " endY1:" << endY1;
         //qDebug() << "endX2:" << endX2 << " endY2:" << endY2;
-        v[index].para[0] = endX1;
-        v[index].para[1] = endY1;
-        v[index].para[2] = endX2;
-        v[index].para[3] = endY2;
+        if(endX1 <= x2 && endX1 >= x1 && endX2 <= x2 && endX2 >= x1 && endY1 <= y2 && endY1 >= y1 && endY2 <= y2 && endY2 >= y1)
+        {
+            v[index].para[0] = endX1;
+            v[index].para[1] = endY1;
+            v[index].para[2] = endX2;
+            v[index].para[3] = endY2;
+        }
+        else
+        {
+            v[index].para[0] = v[index].para[1] = endY1 = v[index].para[2] = v[index].para[3] = 0;
+        }
         drawLineBresenham(endX1, endY1, endX2, endY2, qPainter);
     }
 
@@ -1713,6 +1728,8 @@ void MainWindow::onReceive_DrawCurve(int id, int n, vector<int> tempV, int type)
     g.color.g = (char)((qColor->green())&0xff);
     g.color.b = (char)((qColor->blue())&0xff);
     v.push_back(g);
+    //qDebug() << "color";
+    //qDebug() << qColor->red() << qColor->green() << qColor->blue();
     if(type == 0) drawCurveBspline(g.para, qPainter);
     else if(type == 1) drawCurveBezier(g.para, qPainter);
     ui->label->setPixmap(*qPixmap);
@@ -1740,9 +1757,9 @@ void MainWindow::drawCurveBspline(vector<int> vec, QPainter *thisPainter)
         double a2 = (double)x0/2-x1+x2/2, b2 = (double)y0/2-y1+y2/2;
         double a1 = (double)-x0/2+x2/2, b1 = (double)-y0/2+y2/2;
         double a0 = (double)x0/6+2*x1/3+x2/6, b0 = (double)y0/6+2*y1/3+y2/6;
-        for(int j = 0; j <= 100; j++)
+        for(int j = 0; j <= 256; j++)
         {
-            double t = (double)j/100;
+            double t = (double)j/256;
             double xj = a3*t*t*t+a2*t*t+a1*t+a0;
             double yj = b3*t*t*t+b2*t*t+b1*t+b0;
             thisPainter->drawPoint((int)xj,(int)yj);

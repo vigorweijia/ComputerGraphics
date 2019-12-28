@@ -12,33 +12,3 @@ GalaxyDialog::~GalaxyDialog()
 {
     delete ui;
 }
-
-void GalaxyDialog::nomarlizedAngle(int *angle)
-{
-
-}
-
-void GalaxyDialog::setXRotation(int angle)
-{
-
-}
-
-void GalaxyDialog::setYRotation(int angle)
-{
-
-}
-
-void GalaxyDialog::setZRotation(int angle)
-{
-
-}
-
-void GalaxyDialog::mousePressEvent(QMouseEvent *e)
-{
-
-}
-
-void GalaxyDialog::mouseMoveEvent(QMouseEvent *e)
-{
-
-}
